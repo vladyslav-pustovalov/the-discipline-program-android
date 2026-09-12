@@ -1,5 +1,6 @@
 package my.vladpustovalov.tdp.di
 
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,18 +13,16 @@ import my.vladpustovalov.tdp.data.network.api.ProgramService
 import my.vladpustovalov.tdp.data.network.api.TrainingLevelService
 import my.vladpustovalov.tdp.data.network.api.UserPlansService
 import my.vladpustovalov.tdp.data.network.api.UserService
+import my.vladpustovalov.tdp.util.Constants
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
-    private const val BASE_URL = "https://thedisciplineprogram.com/api/v1/"
 
     @Provides
     @Singleton
@@ -57,7 +56,7 @@ object NetworkModule {
         val contentType = "application/json".toMediaType()
         val json = Json { ignoreUnknownKeys = true }
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(Constants.API.FULL_BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
