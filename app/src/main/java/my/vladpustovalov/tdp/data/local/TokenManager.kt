@@ -20,17 +20,28 @@ class TokenManager(context: Context) {
 
     companion object {
         private const val KEY_JWT_TOKEN = "jwt_token"
+        private const val KEY_USER_ID = "user_id"
     }
 
-    fun saveToken(token: String) {
-        sharedPreferences.edit().putString(KEY_JWT_TOKEN, token).apply()
+    fun saveAuthData(token: String, userId: Int) {
+        sharedPreferences.edit()
+            .putString(KEY_JWT_TOKEN, token)
+            .putInt(KEY_USER_ID, userId)
+            .apply()
     }
 
     fun getToken(): String? {
         return sharedPreferences.getString(KEY_JWT_TOKEN, null)
     }
 
+    fun getUserId(): Int {
+        return sharedPreferences.getInt(KEY_USER_ID, -1)
+    }
+
     fun clearToken() {
-        sharedPreferences.edit().remove(KEY_JWT_TOKEN).apply()
+        sharedPreferences.edit()
+            .remove(KEY_JWT_TOKEN)
+            .remove(KEY_USER_ID)
+            .apply()
     }
 }

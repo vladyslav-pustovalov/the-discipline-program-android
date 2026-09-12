@@ -1,7 +1,6 @@
 package my.vladpustovalov.tdp.data.repository
 
 import my.vladpustovalov.tdp.data.local.TokenManager
-import my.vladpustovalov.tdp.data.model.ChangePasswordDTO
 import my.vladpustovalov.tdp.data.model.JwtDTO
 import my.vladpustovalov.tdp.data.model.SignInDTO
 import my.vladpustovalov.tdp.data.model.SignUpDTO
@@ -17,7 +16,7 @@ class AuthRepository @Inject constructor(
     suspend fun signIn(request: SignInDTO): NetworkResult<JwtDTO> {
         val result = safeApiCall { authService.signIn(request) }
         if (result is NetworkResult.Success) {
-            tokenManager.saveToken(result.data.token)
+            tokenManager.saveAuthData(result.data.accessToken, result.data.userId)
         }
         return result
     }
@@ -25,16 +24,20 @@ class AuthRepository @Inject constructor(
     suspend fun signUp(request: SignUpDTO): NetworkResult<JwtDTO> {
         val result = safeApiCall { authService.signUp(request) }
         if (result is NetworkResult.Success) {
-            tokenManager.saveToken(result.data.token)
+            tokenManager.saveAuthData(result.data.accessToken, result.data.userId)
         }
         return result
     }
 
-    suspend fun changePassword(request: ChangePasswordDTO): NetworkResult<Unit> {
-        return safeApiCall { authService.changePassword(request) }
-    }
-
     fun logout() {
         tokenManager.clearToken()
+    }
+
+    fun isLoggedIn(): Boolean {
+        return !tokenManager.getToken().isNullOrEmpty()
+    }
+
+    fun getUserId(): Int {
+        return tokenManager.getUserId()
     }
 }

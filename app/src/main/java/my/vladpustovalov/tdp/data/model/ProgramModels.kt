@@ -4,30 +4,27 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Program(
-    val id: String,
-    val title: String,
-    val description: String?,
-    val dailyPrograms: List<DailyProgram> = emptyList()
+    val id: Int,
+    val scheduledDate: String? = null,
+    val trainingLevel: TrainingLevel? = null,
+    val userId: Int? = null,
+    val isRestDay: Boolean = false,
+    val dailyProgram: DailyProgram? = null
 )
 
 @Serializable
 data class DailyProgram(
-    val id: String,
-    val dayNumber: Int,
-    val title: String,
-    val dayTrainings: List<DayTrainigs> = emptyList()
+    val dayTrainings: List<DayTraining> = emptyList()
 )
 
 @Serializable
-data class DayTrainigs(
-    val id: String,
-    val title: String,
+data class DayTraining(
+    val trainingNumber: Int,
     val blocks: List<Block> = emptyList()
 )
 
 @Serializable
 data class Block(
-    val id: String,
     val name: String,
-    val exercises: String
+    val exercises: List<String> = emptyList()
 )

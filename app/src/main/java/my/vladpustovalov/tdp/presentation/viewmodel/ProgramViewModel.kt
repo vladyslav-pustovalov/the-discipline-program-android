@@ -1,5 +1,8 @@
 package my.vladpustovalov.tdp.presentation.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,56 +12,64 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import my.vladpustovalov.tdp.data.model.Program
 import my.vladpustovalov.tdp.data.network.NetworkResult
+import my.vladpustovalov.tdp.data.repository.AuthRepository
 import my.vladpustovalov.tdp.data.repository.ProgramRepository
 import my.vladpustovalov.tdp.domain.state.UiState
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
 class ProgramViewModel @Inject constructor(
-    private val programRepository: ProgramRepository
+    private val programRepository: ProgramRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _programsState = MutableStateFlow<UiState<List<Program>>>(UiState.Loading)
-    val programsState: StateFlow<UiState<List<Program>>> = _programsState.asStateFlow()
+    var programDate by mutableStateOf(LocalDate.now())
+        private set
 
-    private val _programDetailState = MutableStateFlow<UiState<Program>?>(null)
-    val programDetailState: StateFlow<UiState<Program>?> = _programDetailState.asStateFlow()
+    var isShownPicker by mutableStateOf(false)
+
+    private val _programState = MutableStateFlow<UiState<Program>>(UiState.Loading)
+    val programState: StateFlow<UiState<Program>> = _programState.asStateFlow()
+
+    private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     init {
-        fetchPrograms()
+        loadProgram(programDate)
     }
 
-    fun fetchPrograms() {
+    fun loadProgram(date: LocalDate = programDate) {
+        programDate = date
+        val dateString = date.format(dateFormatter)
+        val userId = authRepository.getUserId()
+
+        if (userId == -1) {
+            _programState.value = UiState.Error("User ID not found")
+            return
+        }
+
         viewModelScope.launch {
-            _programsState.value = UiState.Loading
-            when (val result = programRepository.getPrograms()) {
+            _programState.value = UiState.Loading
+            when (val result = programRepository.getProgram(userId, dateString)) {
                 is NetworkResult.Success -> {
-                    _programsState.value = UiState.Success(result.data)
+                    _programState.value = UiState.Success(result.data)
                 }
                 is NetworkResult.Error -> {
-                    _programsState.value = UiState.Error(result.message ?: "Unknown error")
+                    _programState.value = UiState.Error("Error ${result.code}: ${result.message ?: "Program not found"}")
                 }
                 is NetworkResult.Exception -> {
-                    _programsState.value = UiState.Error(result.e.message ?: "Unknown error")
+                    _programState.value = UiState.Error(result.e.message ?: "Failed to load program")
                 }
             }
         }
     }
 
-    fun fetchProgramById(id: String) {
-        viewModelScope.launch {
-            _programDetailState.value = UiState.Loading
-            when (val result = programRepository.getProgramById(id)) {
-                is NetworkResult.Success -> {
-                    _programDetailState.value = UiState.Success(result.data)
-                }
-                is NetworkResult.Error -> {
-                    _programDetailState.value = UiState.Error(result.message ?: "Unknown error")
-                }
-                is NetworkResult.Exception -> {
-                    _programDetailState.value = UiState.Error(result.e.message ?: "Unknown error")
-                }
-            }
-        }
+    fun loadNextDay() {
+        loadProgram(programDate.plusDays(1))
+    }
+
+    fun loadPreviousDay() {
+        loadProgram(programDate.minusDays(1))
     }
 }

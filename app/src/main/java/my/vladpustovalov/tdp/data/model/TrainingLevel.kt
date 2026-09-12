@@ -4,7 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TrainingLevel(
-    val id: String,
-    val levelName: String,
-    val description: String? = null
+    val id: Int,
+    val name: String
 )

@@ -9,9 +9,6 @@ class ProgramRepository @Inject constructor(
     private val programService: ProgramService
 ) : BaseRepository() {
 
-    suspend fun getPrograms(): NetworkResult<List<Program>> =
-        safeApiCall { programService.getPrograms() }
-
-    suspend fun getProgramById(id: String): NetworkResult<Program> =
-        safeApiCall { programService.getProgramById(id) }
+    suspend fun getProgram(userId: Int, scheduledDate: String): NetworkResult<Program> =
+        safeApiCall { programService.getProgram(userId, scheduledDate) }
 }

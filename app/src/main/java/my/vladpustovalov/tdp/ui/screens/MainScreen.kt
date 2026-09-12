@@ -1,33 +1,51 @@
 package my.vladpustovalov.tdp.ui.screens
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import my.vladpustovalov.tdp.ui.navigation.Screen
+import my.vladpustovalov.tdp.presentation.viewmodel.AuthViewModel
 
 @Composable
-fun MainScreen(navController: NavController) {
-    Scaffold { paddingValues ->
-        Column(
+fun MainScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
+    var selectedTab by remember { mutableIntStateOf(0) }
+
+    Scaffold(
+        bottomBar = {
+            NavigationBar {
+                NavigationBarItem(
+                    selected = selectedTab == 0,
+                    onClick = { selectedTab = 0 },
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Program") },
+                    label = { Text("Program") }
+                )
+                NavigationBarItem(
+                    selected = selectedTab == 1,
+                    onClick = { selectedTab = 1 },
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "User") },
+                    label = { Text("User") }
+                )
+            }
+        }
+    ) { paddingValues ->
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
         ) {
-            Text(text = "Main Screen (Bottom Nav Placeholder)", style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { navController.navigate(Screen.Program.route) }) {
-                Text("Go to Program")
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { navController.navigate(Screen.User.route) }) {
-                Text("Go to User Profile")
+            when (selectedTab) {
+                0 -> ProgramScreen(navController = navController)
+                1 -> UserScreen(navController = navController, authViewModel = authViewModel)
             }
         }
     }

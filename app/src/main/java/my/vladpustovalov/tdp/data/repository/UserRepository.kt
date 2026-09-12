@@ -1,5 +1,6 @@
 package my.vladpustovalov.tdp.data.repository
 
+import my.vladpustovalov.tdp.data.model.ChangePasswordDTO
 import my.vladpustovalov.tdp.data.model.User
 import my.vladpustovalov.tdp.data.network.NetworkResult
 import my.vladpustovalov.tdp.data.network.api.UserService
@@ -9,15 +10,12 @@ class UserRepository @Inject constructor(
     private val userService: UserService
 ) : BaseRepository() {
 
-    suspend fun getCurrentUser(): NetworkResult<User> =
-        safeApiCall { userService.getCurrentUser() }
+    suspend fun getUser(id: Int): NetworkResult<User> =
+        safeApiCall { userService.getUser(id) }
 
-    suspend fun getUserById(id: String): NetworkResult<User> =
-        safeApiCall { userService.getUserById(id) }
+    suspend fun updateUser(user: User): NetworkResult<User> =
+        safeApiCall { userService.updateUser(user) }
 
-    suspend fun getAllUsers(): NetworkResult<List<User>> =
-        safeApiCall { userService.getAllUsers() }
-
-    suspend fun updateUser(id: String, user: User): NetworkResult<User> =
-        safeApiCall { userService.updateUser(id, user) }
+    suspend fun changePassword(request: ChangePasswordDTO): NetworkResult<Unit> =
+        safeApiCall { userService.changePassword(request) }
 }

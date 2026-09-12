@@ -1,5 +1,8 @@
 package my.vladpustovalov.tdp.presentation.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -8,10 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import my.vladpustovalov.tdp.data.model.SignInDTO
-import my.vladpustovalov.tdp.data.model.SignUpDTO
 import my.vladpustovalov.tdp.data.network.NetworkResult
 import my.vladpustovalov.tdp.data.repository.AuthRepository
-import my.vladpustovalov.tdp.domain.state.UiState
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,45 +20,51 @@ class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow<UiState<Unit>?>(null)
-    val authState: StateFlow<UiState<Unit>?> = _authState.asStateFlow()
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
 
-    fun signIn(signInDTO: SignInDTO) {
+    var isLoading by mutableStateOf(false)
+        private set
+
+    var showingAlert by mutableStateOf(false)
+    var errorMessage by mutableStateOf("")
+
+    private val _isLoggedIn = MutableStateFlow(authRepository.isLoggedIn())
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+    val isLoginButtonDisabled: Boolean
+        get() = email.isBlank() || password.isBlank() || isLoading
+
+    fun performLogin(onSuccess: () -> Unit = {}) {
+        if (isLoginButtonDisabled) return
+
         viewModelScope.launch {
-            _authState.value = UiState.Loading
-            when (val result = authRepository.signIn(signInDTO)) {
+            isLoading = true
+            showingAlert = false
+            when (val result = authRepository.signIn(SignInDTO(username = email, password = password))) {
                 is NetworkResult.Success -> {
-                    _authState.value = UiState.Success(Unit)
+                    isLoading = false
+                    _isLoggedIn.value = true
+                    onSuccess()
                 }
                 is NetworkResult.Error -> {
-                    _authState.value = UiState.Error(result.message ?: "Unknown error")
+                    isLoading = false
+                    errorMessage = result.message ?: "Authentication failed (code: ${result.code})"
+                    showingAlert = true
                 }
                 is NetworkResult.Exception -> {
-                    _authState.value = UiState.Error(result.e.message ?: "Unknown error")
+                    isLoading = false
+                    errorMessage = result.e.message ?: "Authentication failed"
+                    showingAlert = true
                 }
             }
         }
     }
 
-    fun signUp(signUpDTO: SignUpDTO) {
-        viewModelScope.launch {
-            _authState.value = UiState.Loading
-            when (val result = authRepository.signUp(signUpDTO)) {
-                is NetworkResult.Success -> {
-                    _authState.value = UiState.Success(Unit)
-                }
-                is NetworkResult.Error -> {
-                    _authState.value = UiState.Error(result.message ?: "Unknown error")
-                }
-                is NetworkResult.Exception -> {
-                    _authState.value = UiState.Error(result.e.message ?: "Unknown error")
-                }
-            }
-        }
-    }
-    
-    fun logout() {
+    fun signOut() {
         authRepository.logout()
-        _authState.value = null
+        _isLoggedIn.value = false
+        email = ""
+        password = ""
     }
 }

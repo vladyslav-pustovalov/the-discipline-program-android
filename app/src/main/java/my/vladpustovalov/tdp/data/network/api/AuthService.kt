@@ -1,6 +1,5 @@
 package my.vladpustovalov.tdp.data.network.api
 
-import my.vladpustovalov.tdp.data.model.ChangePasswordDTO
 import my.vladpustovalov.tdp.data.model.JwtDTO
 import my.vladpustovalov.tdp.data.model.SignInDTO
 import my.vladpustovalov.tdp.data.model.SignUpDTO
@@ -14,7 +13,4 @@ interface AuthService {
 
     @POST("auth/signup")
     suspend fun signUp(@Body request: SignUpDTO): Response<JwtDTO>
-
-    @POST("auth/change-password")
-    suspend fun changePassword(@Body request: ChangePasswordDTO): Response<Unit>
 }

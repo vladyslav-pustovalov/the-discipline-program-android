@@ -4,25 +4,29 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SignInDTO(
-    val email: String,
-    val passwordHash: String
+    val username: String,
+    val password: String
 )
 
 @Serializable
 data class SignUpDTO(
-    val email: String,
-    val passwordHash: String,
-    val firstName: String,
-    val lastName: String
+    val username: String,
+    val password: String,
+    val firstName: String? = null,
+    val lastName: String? = null
 )
 
 @Serializable
 data class JwtDTO(
-    val token: String
+    val userId: Int,
+    val accessToken: String,
+    val userRole: UserRole? = null,
+    val userPlan: UserPlan? = null
 )
 
 @Serializable
 data class ChangePasswordDTO(
-    val oldPasswordHash: String,
-    val newPasswordHash: String
+    val userId: Int,
+    val oldPassword: String,
+    val newPassword: String
 )
