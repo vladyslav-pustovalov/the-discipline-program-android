@@ -35,18 +35,29 @@ class EditUserViewModel @Inject constructor(
         dateOfBirth = user.dateOfBirth ?: ""
     }
 
-    fun saveUpdatedUser(currentUser: User, onSuccess: (User) -> Unit) {
-        val updatedUser = currentUser.copy(
-            firstName = firstName.ifBlank { null },
-            lastName = lastName.ifBlank { null },
-            phoneNumber = phoneNumber.ifBlank { null },
-            dateOfBirth = dateOfBirth.ifBlank { null }
+    private fun updatedUser(currentUser: User): User {
+        return User(
+            id = currentUser.id,
+            isEnabled = currentUser.isEnabled,
+            username = currentUser.username,
+            userRole = currentUser.userRole,
+            trainingLevel = currentUser.trainingLevel,
+            userPlan = currentUser.userPlan,
+            team = currentUser.team,
+            firstName = firstName,
+            lastName = lastName,
+            phoneNumber = phoneNumber,
+            dateOfBirth = dateOfBirth
         )
+    }
+
+    fun saveUpdatedUser(currentUser: User, onSuccess: (User) -> Unit) {
+        val userToSave = updatedUser(currentUser)
 
         viewModelScope.launch {
             isLoading = true
             showingAlert = false
-            when (val result = userRepository.updateUser(updatedUser)) {
+            when (val result = userRepository.updateUser(userToSave)) {
                 is NetworkResult.Success -> {
                     isLoading = false
                     onSuccess(result.data)
