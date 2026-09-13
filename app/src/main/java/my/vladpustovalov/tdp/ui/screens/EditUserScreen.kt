@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import my.vladpustovalov.tdp.domain.state.UiState
 import my.vladpustovalov.tdp.presentation.viewmodel.EditUserViewModel
 import my.vladpustovalov.tdp.presentation.viewmodel.UserViewModel
+import my.vladpustovalov.tdp.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -125,6 +126,17 @@ fun EditUserScreen(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate(Screen.ChangePassword.route) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp)
+            ) {
+                Text("Change Password", fontSize = 16.sp)
+            }
         }
     }
 }

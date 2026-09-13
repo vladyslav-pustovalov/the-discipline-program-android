@@ -62,23 +62,6 @@ fun UserScreen(
                     }
                 }
             )
-        },
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Button(
-                    onClick = { navController.navigate(Screen.ChangePassword.route) },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                ) {
-                    Text("Change Password", fontSize = 16.sp)
-                }
-            }
         }
     ) { paddingValues ->
         Box(
