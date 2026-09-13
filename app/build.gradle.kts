@@ -11,11 +11,11 @@ plugins {
 }
 
 android {
-    namespace = "my.vladpustovalov.tdp"
+    namespace = "my.vladpustovalov.thedisciplineprogram"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "my.vladpustovalov.tdp"
+        applicationId = "my.vladpustovalov.thedisciplineprogram"
         minSdk = 26
         targetSdk = 35
         versionCode = 1
