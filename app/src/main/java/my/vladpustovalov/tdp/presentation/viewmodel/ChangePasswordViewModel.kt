@@ -11,6 +11,8 @@ import my.vladpustovalov.tdp.data.model.ChangePasswordDTO
 import my.vladpustovalov.tdp.data.network.NetworkResult
 import my.vladpustovalov.tdp.data.repository.AuthRepository
 import my.vladpustovalov.tdp.data.repository.UserRepository
+import my.vladpustovalov.tdp.util.isValidPassword
+import my.vladpustovalov.tdp.util.passwordValidationMessage
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,7 +38,10 @@ class ChangePasswordViewModel @Inject constructor(
         get() = newPassword == confirmNewPassword
 
     val isValidPassword: Boolean
-        get() = newPassword.length >= 6
+        get() = newPassword.isValidPassword
+
+    val passwordValidationMessage: String?
+        get() = newPassword.passwordValidationMessage
 
     val isSaveButtonDisabled: Boolean
         get() = oldPassword.isBlank() ||

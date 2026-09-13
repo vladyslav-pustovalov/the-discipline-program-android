@@ -145,11 +145,13 @@ fun ChangePasswordScreen(
                     )
                 }
                 !changePasswordViewModel.isValidPassword -> {
-                    Text(
-                        text = "Password must be at least 6 characters",
-                        color = Color.Red,
-                        fontSize = 14.sp
-                    )
+                    changePasswordViewModel.passwordValidationMessage?.let { message ->
+                        Text(
+                            text = message,
+                            color = Color.Red,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
                 else -> {
                     Text(
