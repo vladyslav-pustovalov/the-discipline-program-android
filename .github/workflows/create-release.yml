@@ -1,0 +1,109 @@
+name: Create Android Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.0.1)'
+        required: true
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create release branch and bump version
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          git fetch origin develop
+          git checkout -b release/release-${VERSION} origin/develop
+
+          # Extract current versionCode and increment it
+          CURRENT_VC=$(sed -n 's/.*versionCode = \([0-9]*\).*/\1/p' app/build.gradle.kts)
+          NEW_VC=$((CURRENT_VC + 1))
+
+          # Bump versionCode and versionName in app/build.gradle.kts
+          sed -i "s/versionCode = .*/versionCode = $NEW_VC/" app/build.gradle.kts
+          sed -i "s/versionName = .*/versionName = \"${VERSION}\"/" app/build.gradle.kts
+
+          git add app/build.gradle.kts
+          git commit -m "Bump version to ${VERSION} (versionCode $NEW_VC)"
+          git push origin release/release-${VERSION}
+
+      - name: Build Release APK
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Sign APK with apksigner (v2/v3 signatures)
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          mkdir -p release-output
+
+          # Find generated APK
+          RAW_APK=$(find app/build/outputs/apk/release/ -name "*.apk" | head -n 1)
+
+          # Find latest build-tools directory
+          BUILD_TOOLS_DIR=$(ls -d ${ANDROID_HOME}/build-tools/* | tail -n 1)
+
+          # Generate self-signed keystore
+          keytool -genkey -v -keystore release.keystore -alias releaseAlias -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=TheDisciplineProgram, OU=Dev, O=TheDisciplineProgram, L=City, S=State, C=US" -storepass android -keypass android
+
+          # Align APK
+          $BUILD_TOOLS_DIR/zipalign -v -f 4 "$RAW_APK" release-output/aligned.apk
+
+          # Sign APK with v2/v3 scheme
+          OUTPUT_APK="release-output/TheDisciplineProgram-v${VERSION}.apk"
+          $BUILD_TOOLS_DIR/apksigner sign --ks release.keystore --ks-pass pass:android --key-pass pass:android --ks-key-alias releaseAlias --out "$OUTPUT_APK" release-output/aligned.apk
+          rm release-output/aligned.apk
+
+          # Verify signature
+          $BUILD_TOOLS_DIR/apksigner verify "$OUTPUT_APK"
+
+      - name: Create Pull Request to master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base master \
+            --head release/release-${{ github.event.inputs.version }} \
+            --title "Release ${{ github.event.inputs.version }}" \
+            --body "Auto-created release branch for version ${{ github.event.inputs.version }}"
+
+      - name: Create GitHub Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          gh release create "v${VERSION}" release-output/TheDisciplineProgram-v${VERSION}.apk \
+            --title "Release v${VERSION}" \
+            --notes "Android Release v${VERSION}" \
+            --target "release/release-${VERSION}"
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TheDisciplineProgram-v${{ github.event.inputs.version }}.apk
+          path: release-output/TheDisciplineProgram-v${{ github.event.inputs.version }}.apk
