@@ -2,6 +2,8 @@ package my.vladpustovalov.thedisciplineprogram.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -12,9 +14,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.EditUserViewModel
@@ -51,6 +55,7 @@ fun EditUserScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
                 title = { Text("Edit User", fontWeight = FontWeight.Bold) },
@@ -89,6 +94,7 @@ fun EditUserScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -100,6 +106,10 @@ fun EditUserScreen(
                 onValueChange = { editUserViewModel.firstName = it },
                 label = { Text("First Name") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -108,6 +118,10 @@ fun EditUserScreen(
                 onValueChange = { editUserViewModel.lastName = it },
                 label = { Text("Last Name") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -116,6 +130,10 @@ fun EditUserScreen(
                 onValueChange = { editUserViewModel.phoneNumber = it },
                 label = { Text("Phone Number") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Phone,
+                    imeAction = ImeAction.Next
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
@@ -124,6 +142,21 @@ fun EditUserScreen(
                 onValueChange = { editUserViewModel.dateOfBirth = it },
                 label = { Text("Date of Birth (YYYY-MM-DD)") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        val currentUser = (userState as? UiState.Success)?.data
+                        currentUser?.let { user ->
+                            editUserViewModel.saveUpdatedUser(user) { updatedUser ->
+                                userViewModel.updateUser(updatedUser)
+                                navController.popBackStack()
+                            }
+                        }
+                    }
+                ),
                 modifier = Modifier.fillMaxWidth()
             )
 
