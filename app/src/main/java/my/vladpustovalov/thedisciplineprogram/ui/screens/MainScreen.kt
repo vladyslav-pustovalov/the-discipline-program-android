@@ -10,31 +10,43 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
-import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
+import my.vladpustovalov.thedisciplineprogram.R
 
 @Composable
-fun MainScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel()
+fun MainRoute(
+    navController: NavController
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
+    MainScreenContent(
+        selectedTab = selectedTab,
+        onTabSelected = { selectedTab = it },
+        navController = navController
+    )
+}
+
+@Composable
+fun MainScreenContent(
+    selectedTab: Int,
+    onTabSelected: (Int) -> Unit,
+    navController: NavController
+) {
     Scaffold(
         bottomBar = {
             NavigationBar {
                 NavigationBarItem(
                     selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Program") },
-                    label = { Text("Program") }
+                    onClick = { onTabSelected(0) },
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.nav_program)) },
+                    label = { Text(stringResource(R.string.nav_program)) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "User") },
-                    label = { Text("User") }
+                    onClick = { onTabSelected(1) },
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = stringResource(R.string.nav_user)) },
+                    label = { Text(stringResource(R.string.nav_user)) }
                 )
             }
         }
@@ -45,8 +57,8 @@ fun MainScreen(
                 .padding(paddingValues)
         ) {
             when (selectedTab) {
-                0 -> ProgramScreen(navController = navController)
-                1 -> UserScreen(navController = navController, authViewModel = authViewModel)
+                0 -> ProgramRoute(navController = navController)
+                1 -> UserRoute(navController = navController)
             }
         }
     }

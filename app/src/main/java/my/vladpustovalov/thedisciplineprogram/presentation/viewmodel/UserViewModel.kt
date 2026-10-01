@@ -19,7 +19,6 @@ class UserViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
-
     private val _userState = MutableStateFlow<UiState<User>>(UiState.Loading)
     val userState: StateFlow<UiState<User>> = _userState.asStateFlow()
 
@@ -28,13 +27,13 @@ class UserViewModel @Inject constructor(
     }
 
     fun loadUser() {
-        val userId = authRepository.getUserId()
-        if (userId == -1) {
-            _userState.value = UiState.Error("User ID not found")
-            return
-        }
-
         viewModelScope.launch {
+            val userId = authRepository.getUserId()
+            if (userId == -1) {
+                _userState.value = UiState.Error("User ID not found")
+                return@launch
+            }
+
             _userState.value = UiState.Loading
             when (val result = userRepository.getUser(userId)) {
                 is NetworkResult.Success -> {
@@ -52,9 +51,5 @@ class UserViewModel @Inject constructor(
 
     fun updateUser(user: User) {
         _userState.value = UiState.Success(user)
-    }
-
-    fun reloadUser() {
-        loadUser()
     }
 }

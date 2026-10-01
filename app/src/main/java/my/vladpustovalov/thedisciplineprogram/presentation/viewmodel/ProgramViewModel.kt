@@ -24,15 +24,11 @@ class ProgramViewModel @Inject constructor(
     private val programRepository: ProgramRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
-
     var programDate by mutableStateOf(LocalDate.now())
         private set
-
     var isShownPicker by mutableStateOf(false)
-
     private val _programState = MutableStateFlow<UiState<Program>>(UiState.Loading)
     val programState: StateFlow<UiState<Program>> = _programState.asStateFlow()
-
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     init {
@@ -42,14 +38,15 @@ class ProgramViewModel @Inject constructor(
     fun loadProgram(date: LocalDate = programDate) {
         programDate = date
         val dateString = date.format(dateFormatter)
-        val userId = authRepository.getUserId()
-
-        if (userId == -1) {
-            _programState.value = UiState.Error("User ID not found")
-            return
-        }
 
         viewModelScope.launch {
+            val userId = authRepository.getUserId()
+
+            if (userId == -1) {
+                _programState.value = UiState.Error("User ID not found")
+                return@launch
+            }
+
             _programState.value = UiState.Loading
             when (val result = programRepository.getProgram(userId, dateString)) {
                 is NetworkResult.Success -> {

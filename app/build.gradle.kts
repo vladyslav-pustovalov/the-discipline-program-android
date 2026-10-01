@@ -19,7 +19,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 2
-        versionName = "1.0.1"
+        versionName = "1.0.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -78,7 +78,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     // Storage
-    implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.datastore.preferences)
 
     // Coroutines

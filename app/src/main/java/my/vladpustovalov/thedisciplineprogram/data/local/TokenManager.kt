@@ -1,47 +1,61 @@
 package my.vladpustovalov.thedisciplineprogram.data.local
 
 import android.content.Context
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKey
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 
-class TokenManager(context: Context) {
+private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "auth_prefs")
 
-    private val masterKey = MasterKey.Builder(context)
-        .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
-        .build()
-
-    private val sharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "auth_prefs",
-        masterKey,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+class TokenManager(private val context: Context) {
 
     companion object {
-        private const val KEY_JWT_TOKEN = "jwt_token"
-        private const val KEY_USER_ID = "user_id"
+        private val KEY_JWT_TOKEN = stringPreferencesKey("jwt_token")
+        private val KEY_USER_ID = intPreferencesKey("user_id")
     }
 
-    fun saveAuthData(token: String, userId: Int) {
-        sharedPreferences.edit()
-            .putString(KEY_JWT_TOKEN, token)
-            .putInt(KEY_USER_ID, userId)
-            .apply()
+    val tokenFlow: Flow<String?> = context.dataStore.data.map { preferences ->
+        preferences[KEY_JWT_TOKEN]
     }
 
-    fun getToken(): String? {
-        return sharedPreferences.getString(KEY_JWT_TOKEN, null)
+    val userIdFlow: Flow<Int> = context.dataStore.data.map { preferences ->
+        preferences[KEY_USER_ID] ?: -1
     }
 
-    fun getUserId(): Int {
-        return sharedPreferences.getInt(KEY_USER_ID, -1)
+    suspend fun saveAuthData(token: String, userId: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[KEY_JWT_TOKEN] = token
+            preferences[KEY_USER_ID] = userId
+        }
     }
 
-    fun clearToken() {
-        sharedPreferences.edit()
-            .remove(KEY_JWT_TOKEN)
-            .remove(KEY_USER_ID)
-            .apply()
+    fun getTokenSync(): String? = runBlocking {
+        context.dataStore.data.map { it[KEY_JWT_TOKEN] }.firstOrNull()
+    }
+
+    suspend fun getToken(): String? {
+        return context.dataStore.data.map { it[KEY_JWT_TOKEN] }.firstOrNull()
+    }
+
+    fun getUserIdSync(): Int = runBlocking {
+        context.dataStore.data.map { it[KEY_USER_ID] ?: -1 }.firstOrNull() ?: -1
+    }
+
+    suspend fun getUserId(): Int {
+        return context.dataStore.data.map { it[KEY_USER_ID] ?: -1 }.firstOrNull() ?: -1
+    }
+
+    suspend fun clearToken() {
+        context.dataStore.edit { preferences ->
+            preferences.remove(KEY_JWT_TOKEN)
+            preferences.remove(KEY_USER_ID)
+        }
     }
 }

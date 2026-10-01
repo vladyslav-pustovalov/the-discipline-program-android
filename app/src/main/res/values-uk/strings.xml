@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name">The Discipline Program</string>
+    <string name="app_short_name">TDP</string>
+
+    <!-- Common -->
+    <string name="common_ok">ОК</string>
+    <string name="common_cancel">Відмінити</string>
+    <string name="common_retry">Повторити</string>
+    <string name="common_save">Зберегти</string>
+    <string name="common_back_cd">Назад</string>
+
+    <!-- Navigation -->
+    <string name="nav_program">Программа</string>
+    <string name="nav_user">Користувач</string>
+
+    <!-- Login Screen -->
+    <string name="login_auth_failed_title">Помилка аутинтифікації</string>
+    <string name="login_welcome">Вітаємо!</string>
+    <string name="login_email_placeholder">Пошта</string>
+    <string name="login_password_placeholder">Пароль</string>
+    <string name="login_sign_in_button">Увійти</string>
+    <string name="login_social_instagram_cd">Instagram</string>
+    <string name="login_social_telegram_cd">Telegram</string>
+    <string name="login_social_youtube_cd">YouTube</string>
+
+    <!-- Program Screen -->
+    <string name="program_select_date_title">Вибрати день</string>
+    <string name="program_prev_day_cd">Попередній день</string>
+    <string name="program_select_date_cd">Вибрати день</string>
+    <string name="program_next_day_cd">Наступний день</string>
+    <string name="program_no_program_today">Немає даних про сьогоднішню программу</string>
+    <string name="program_load_error">Помилка при завантаженні программи</string>
+    <string name="program_rest_day">Сьогодні день відпочинку</string>
+    <string name="program_training_number">Тренування номер: %1$d</string>
+
+    <!-- User Profile Screen -->
+    <string name="user_profile_title">Профіль</string>
+    <string name="user_sign_out">Вийти</string>
+    <string name="user_edit">Змінити</string>
+    <string name="user_error_prefix">Помилка: %1$s</string>
+    <string name="user_label_email">Пошта</string>
+    <string name="user_label_first_name">Імʼя</string>
+    <string name="user_label_last_name">Прізвище</string>
+    <string name="user_label_level">Рівень</string>
+    <string name="user_label_plan">План</string>
+    <string name="user_label_birthday">День народження</string>
+    <string name="user_label_phone">Номер</string>
+
+    <!-- Edit User Screen -->
+    <string name="edit_user_error_title">Помилка при спробі оновити дані користувача</string>
+    <string name="edit_user_title">Редагувати</string>
+    <string name="edit_user_details_header">Дані користувача</string>
+    <string name="edit_user_first_name">Імʼя</string>
+    <string name="edit_user_last_name">Прізвище</string>
+    <string name="edit_user_phone_number">Номер телефону</string>
+    <string name="edit_user_date_of_birth">День народження (РРРР-ММ-ДД)</string>
+    <string name="edit_user_change_password">Змінити пароль</string>
+
+    <!-- Change Password Screen -->
+    <string name="change_password_error_title">Помилка при спробі зміни пароля</string>
+    <string name="change_password_title">Змінити пароль</string>
+    <string name="change_password_old_password">Старий пароль</string>
+    <string name="change_password_new_password">Новий пароль</string>
+    <string name="change_password_confirm_new_password">Підтвердіть новий пароль</string>
+    <string name="change_password_err_same">Новий пароль має бути інакшим</string>
+    <string name="change_password_err_not_confirmed">Новий пароль не підтверджено</string>
+    <string name="change_password_all_good">Все правильно</string>
+
+    <!-- Password Validation -->
+    <string name="password_validation_length">Пароль повинен містити від 6 до 32 символів.</string>
+    <string name="password_validation_disallowed_chars">Пароль містить недопустимі символи (наприклад, \", \', \\, &lt;, &gt;, {, }, [, ], (, ), `, або пробіл).</string>
+    <string name="password_validation_uppercase">Пароль повинен містити принаймні одну велику літеру.</string>
+    <string name="password_validation_lowercase">Пароль повинен містити принаймні одну маленьку літеру.</string>
+    <string name="password_validation_digit">Пароль повинен містити принаймні одну цифру.</string>
+    <string name="password_validation_special_char">Пароль повинен містити принаймні один спеціальний символ (наприклад, !@#$%^&amp;*).</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_payment_reminders">Нагадування про оплату</string>
+    <string name="notification_payment_reminder_title">Нагадування про оплату</string>
+    <string name="notification_payment_reminder_text">Будь ласка, здійсніть щомісячний платіж для The Discipline Program.</string>
+</resources>

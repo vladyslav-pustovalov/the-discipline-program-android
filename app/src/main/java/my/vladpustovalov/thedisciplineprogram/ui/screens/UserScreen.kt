@@ -13,34 +13,49 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.data.model.User
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.UserViewModel
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserScreen(
+fun UserRoute(
     navController: NavController,
-    viewModel: UserViewModel = hiltViewModel(),
+    userViewModel: UserViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val userState by viewModel.userState.collectAsState()
+    val userState by userViewModel.userState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.loadUser()
+        userViewModel.loadUser()
     }
 
+    UserScreenContent(
+        userState = userState,
+        onSignOut = { authViewModel.signOut() },
+        onEditUser = { navController.navigate(Screen.EditUser.route) }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserScreenContent(
+    userState: UiState<User>,
+    onSignOut: () -> Unit,
+    onEditUser: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.user_profile_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     Box(
                         modifier = Modifier
@@ -49,16 +64,16 @@ fun UserScreen(
                             .background(Color.Gray.copy(alpha = 0.3f))
                     ) {
                         TextButton(
-                            onClick = { authViewModel.signOut() },
+                            onClick = onSignOut,
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text("Sign Out", color = Color.Red, fontSize = 14.sp)
+                            Text(stringResource(R.string.user_sign_out), color = Color.Red, fontSize = 14.sp)
                         }
                     }
                 },
                 actions = {
-                    TextButton(onClick = { navController.navigate(Screen.EditUser.route) }) {
-                        Text("Edit", fontSize = 16.sp)
+                    TextButton(onClick = onEditUser) {
+                        Text(stringResource(R.string.user_edit), fontSize = 16.sp)
                     }
                 }
             )
@@ -78,7 +93,7 @@ fun UserScreen(
                 }
                 is UiState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Error: ${state.message}")
+                        Text(stringResource(R.string.user_error_prefix, state.message))
                     }
                 }
                 is UiState.Success -> {
@@ -96,13 +111,13 @@ private fun UserProfileDetails(user: User) {
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item { ProfileItem(label = "Email", value = user.username) }
-        item { ProfileItem(label = "First name", value = user.firstName ?: "") }
-        item { ProfileItem(label = "Last name", value = user.lastName ?: "") }
-        item { ProfileItem(label = "Level", value = user.trainingLevel?.name ?: "") }
-        item { ProfileItem(label = "Plan", value = user.userPlan?.name ?: "") }
-        item { ProfileItem(label = "Birthday", value = user.dateOfBirth ?: "") }
-        item { ProfileItem(label = "Phone", value = user.phoneNumber ?: "") }
+        item { ProfileItem(label = stringResource(R.string.user_label_email), value = user.username) }
+        item { ProfileItem(label = stringResource(R.string.user_label_first_name), value = user.firstName ?: "") }
+        item { ProfileItem(label = stringResource(R.string.user_label_last_name), value = user.lastName ?: "") }
+        item { ProfileItem(label = stringResource(R.string.user_label_level), value = user.trainingLevel?.name ?: "") }
+        item { ProfileItem(label = stringResource(R.string.user_label_plan), value = user.userPlan?.name ?: "") }
+        item { ProfileItem(label = stringResource(R.string.user_label_birthday), value = user.dateOfBirth ?: "") }
+        item { ProfileItem(label = stringResource(R.string.user_label_phone), value = user.phoneNumber ?: "") }
     }
 }
 

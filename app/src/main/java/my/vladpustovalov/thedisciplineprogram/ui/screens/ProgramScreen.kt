@@ -11,56 +11,88 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.data.model.Block
+import my.vladpustovalov.thedisciplineprogram.data.model.Program
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ProgramViewModel
 import java.time.Instant
-import java.time.ZoneId
+import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProgramScreen(
+fun ProgramRoute(
     navController: NavController,
     viewModel: ProgramViewModel = hiltViewModel()
 ) {
     val programState by viewModel.programState.collectAsState()
+
+    ProgramScreenContent(
+        programState = programState,
+        programDate = viewModel.programDate,
+        isShownPicker = viewModel.isShownPicker,
+        onPreviousDayClick = { viewModel.loadPreviousDay() },
+        onNextDayClick = { viewModel.loadNextDay() },
+        onSelectDateClick = { viewModel.isShownPicker = true },
+        onDismissPicker = { viewModel.isShownPicker = false },
+        onDateSelected = { selectedDate ->
+            viewModel.loadProgram(selectedDate)
+            viewModel.isShownPicker = false
+        },
+        onRetry = { viewModel.loadProgram() }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProgramScreenContent(
+    programState: UiState<Program>,
+    programDate: LocalDate,
+    isShownPicker: Boolean,
+    onPreviousDayClick: () -> Unit,
+    onNextDayClick: () -> Unit,
+    onSelectDateClick: () -> Unit,
+    onDismissPicker: () -> Unit,
+    onDateSelected: (LocalDate) -> Unit,
+    onRetry: () -> Unit
+) {
     val dateTitleFormatter = remember { DateTimeFormatter.ofPattern("EEEE dd.MM.yy") }
 
-    if (viewModel.isShownPicker) {
+    if (isShownPicker) {
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = viewModel.programDate
-                .atStartOfDay(ZoneId.systemDefault())
+            initialSelectedDateMillis = programDate
+                .atStartOfDay(ZoneOffset.UTC)
                 .toInstant()
                 .toEpochMilli()
         )
 
         DatePickerDialog(
-            onDismissRequest = { viewModel.isShownPicker = false },
+            onDismissRequest = onDismissPicker,
             confirmButton = {
                 TextButton(
                     onClick = {
                         datePickerState.selectedDateMillis?.let { millis ->
                             val selectedLocalDate = Instant.ofEpochMilli(millis)
-                                .atZone(ZoneId.systemDefault())
+                                .atZone(ZoneOffset.UTC)
                                 .toLocalDate()
-                            viewModel.loadProgram(selectedLocalDate)
-                        }
-                        viewModel.isShownPicker = false
+                            onDateSelected(selectedLocalDate)
+                        } ?: onDismissPicker()
                     }
                 ) {
-                    Text("Select date")
+                    Text(stringResource(R.string.program_select_date_title))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.isShownPicker = false }) {
-                    Text("Cancel")
+                TextButton(onClick = onDismissPicker) {
+                    Text(stringResource(R.string.common_cancel))
                 }
             }
         ) {
@@ -73,30 +105,30 @@ fun ProgramScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = viewModel.programDate.format(dateTitleFormatter),
+                        text = programDate.format(dateTitleFormatter),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { viewModel.loadPreviousDay() }) {
+                    IconButton(onClick = onPreviousDayClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                            contentDescription = "Previous Day"
+                            contentDescription = stringResource(R.string.program_prev_day_cd)
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.isShownPicker = true }) {
+                    IconButton(onClick = onSelectDateClick) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
-                            contentDescription = "Select Date"
+                            contentDescription = stringResource(R.string.program_select_date_cd)
                         )
                     }
-                    IconButton(onClick = { viewModel.loadNextDay() }) {
+                    IconButton(onClick = onNextDayClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                            contentDescription = "Next Day"
+                            contentDescription = stringResource(R.string.program_next_day_cd)
                         )
                     }
                 }
@@ -121,19 +153,19 @@ fun ProgramScreen(
                     ) {
                         if (state.message.contains("404")) {
                             Text(
-                                text = "There is no program for today",
+                                text = stringResource(R.string.program_no_program_today),
                                 style = MaterialTheme.typography.titleMedium,
                                 textAlign = TextAlign.Center
                             )
                         } else {
                             Text(
-                                text = "Something went wrong with loading today's program",
+                                text = stringResource(R.string.program_load_error),
                                 style = MaterialTheme.typography.bodyLarge,
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = { viewModel.loadProgram() }) {
-                                Text("Retry")
+                            Button(onClick = onRetry) {
+                                Text(stringResource(R.string.common_retry))
                             }
                         }
                     }
@@ -142,7 +174,7 @@ fun ProgramScreen(
                     val program = state.data
                     if (program.isRestDay) {
                         Text(
-                            text = "Today is the rest day",
+                            text = stringResource(R.string.program_rest_day),
                             style = MaterialTheme.typography.headlineSmall,
                             fontWeight = FontWeight.Bold,
                             textAlign = TextAlign.Center
@@ -151,7 +183,7 @@ fun ProgramScreen(
                         val dayTrainings = program.dailyProgram?.dayTrainings ?: emptyList()
                         if (dayTrainings.isEmpty()) {
                             Text(
-                                text = "There is no program for today",
+                                text = stringResource(R.string.program_no_program_today),
                                 style = MaterialTheme.typography.titleMedium,
                                 textAlign = TextAlign.Center
                             )
@@ -162,7 +194,7 @@ fun ProgramScreen(
                             ) {
                                 items(dayTrainings) { training ->
                                     Text(
-                                        text = "Training number: ${training.trainingNumber}",
+                                        text = stringResource(R.string.program_training_number, training.trainingNumber),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
                                         modifier = Modifier.padding(vertical = 8.dp)

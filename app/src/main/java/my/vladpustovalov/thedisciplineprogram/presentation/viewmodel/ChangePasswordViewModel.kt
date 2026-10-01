@@ -1,5 +1,6 @@
 package my.vladpustovalov.thedisciplineprogram.presentation.viewmodel
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,7 +13,7 @@ import my.vladpustovalov.thedisciplineprogram.data.network.NetworkResult
 import my.vladpustovalov.thedisciplineprogram.data.repository.AuthRepository
 import my.vladpustovalov.thedisciplineprogram.data.repository.UserRepository
 import my.vladpustovalov.thedisciplineprogram.util.isValidPassword
-import my.vladpustovalov.thedisciplineprogram.util.passwordValidationMessage
+import my.vladpustovalov.thedisciplineprogram.util.passwordValidationResId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -20,29 +21,21 @@ class ChangePasswordViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
-
     var oldPassword by mutableStateOf("")
     var newPassword by mutableStateOf("")
     var confirmNewPassword by mutableStateOf("")
-
     var isLoading by mutableStateOf(false)
         private set
-
     var showingAlert by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
-
     val isOldAndNewPasswordsTheSame: Boolean
         get() = newPassword.isNotEmpty() && oldPassword == newPassword
-
     val isNewPasswordConfirmed: Boolean
         get() = newPassword == confirmNewPassword
-
     val isValidPassword: Boolean
         get() = newPassword.isValidPassword
-
-    val passwordValidationMessage: String?
-        get() = newPassword.passwordValidationMessage
-
+    val passwordValidationResId: Int?
+        @StringRes get() = newPassword.passwordValidationResId
     val isSaveButtonDisabled: Boolean
         get() = oldPassword.isBlank() ||
                 newPassword.isBlank() ||
@@ -53,10 +46,10 @@ class ChangePasswordViewModel @Inject constructor(
                 isLoading
 
     fun saveNewPassword(onSuccess: () -> Unit) {
-        val userId = authRepository.getUserId()
-        if (userId == -1 || isSaveButtonDisabled) return
-
         viewModelScope.launch {
+            val userId = authRepository.getUserId()
+            if (userId == -1 || isSaveButtonDisabled) return@launch
+
             isLoading = true
             showingAlert = false
             val dto = ChangePasswordDTO(

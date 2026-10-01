@@ -1,6 +1,8 @@
 package my.vladpustovalov.thedisciplineprogram.presentation.viewmodel
 
+import android.Manifest
 import android.app.Application
+import androidx.annotation.RequiresPermission
 import androidx.lifecycle.AndroidViewModel
 import my.vladpustovalov.thedisciplineprogram.domain.notification.LocalNotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -13,6 +15,7 @@ class LocalNotificationViewModel @Inject constructor(
 
     private val notificationManager = LocalNotificationManager(application)
 
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     fun schedulePaymentReminder() {
         notificationManager.scheduleMonthlyPaymentReminder()
     }
