@@ -11,40 +11,27 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
-import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 
 @Composable
 fun MainRoute(
-    navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel()
+    navController: NavController
 ) {
     var selectedTab by rememberSaveable { mutableIntStateOf(0) }
 
     MainScreenContent(
         selectedTab = selectedTab,
         onTabSelected = { selectedTab = it },
-        navController = navController,
-        authViewModel = authViewModel
+        navController = navController
     )
-}
-
-@Composable
-fun MainScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel()
-) {
-    MainRoute(navController = navController, authViewModel = authViewModel)
 }
 
 @Composable
 fun MainScreenContent(
     selectedTab: Int,
     onTabSelected: (Int) -> Unit,
-    navController: NavController,
-    authViewModel: AuthViewModel
+    navController: NavController
 ) {
     Scaffold(
         bottomBar = {
@@ -71,7 +58,7 @@ fun MainScreenContent(
         ) {
             when (selectedTab) {
                 0 -> ProgramRoute(navController = navController)
-                1 -> UserRoute(navController = navController, authViewModel = authViewModel)
+                1 -> UserRoute(navController = navController)
             }
         }
     }

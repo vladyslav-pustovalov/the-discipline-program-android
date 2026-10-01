@@ -45,15 +45,6 @@ fun UserRoute(
     )
 }
 
-@Composable
-fun UserScreen(
-    navController: NavController,
-    viewModel: UserViewModel = hiltViewModel(),
-    authViewModel: AuthViewModel = hiltViewModel()
-) {
-    UserRoute(navController = navController, userViewModel = viewModel, authViewModel = authViewModel)
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserScreenContent(

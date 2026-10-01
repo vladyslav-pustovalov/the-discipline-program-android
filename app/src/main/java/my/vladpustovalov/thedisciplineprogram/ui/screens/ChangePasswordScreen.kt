@@ -67,19 +67,6 @@ fun ChangePasswordRoute(
     )
 }
 
-@Composable
-fun ChangePasswordScreen(
-    navController: NavController,
-    authViewModel: AuthViewModel = hiltViewModel(),
-    changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
-) {
-    ChangePasswordRoute(
-        navController = navController,
-        authViewModel = authViewModel,
-        changePasswordViewModel = changePasswordViewModel
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePasswordScreenContent(

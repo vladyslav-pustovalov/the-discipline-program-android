@@ -27,7 +27,7 @@ fun AppNavGraph(
         startDestination = startDestination
     ) {
         composable(Screen.Login.route) { LoginRoute(navController, authViewModel) }
-        composable(Screen.Main.route) { MainRoute(navController, authViewModel) }
+        composable(Screen.Main.route) { MainRoute(navController) }
         composable(Screen.EditUser.route) { EditUserRoute(navController) }
         composable(Screen.ChangePassword.route) { ChangePasswordRoute(navController, authViewModel) }
     }

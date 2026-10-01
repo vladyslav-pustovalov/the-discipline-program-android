@@ -77,14 +77,6 @@ fun LoginRoute(
 }
 
 @Composable
-fun LoginScreen(
-    navController: NavController,
-    viewModel: AuthViewModel = hiltViewModel()
-) {
-    LoginRoute(navController = navController, viewModel = viewModel)
-}
-
-@Composable
 fun LoginScreenContent(
     email: String,
     password: String,

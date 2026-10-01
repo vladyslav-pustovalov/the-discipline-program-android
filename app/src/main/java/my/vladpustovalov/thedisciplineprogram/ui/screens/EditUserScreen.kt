@@ -79,15 +79,6 @@ fun EditUserRoute(
     )
 }
 
-@Composable
-fun EditUserScreen(
-    navController: NavController,
-    userViewModel: UserViewModel = hiltViewModel(),
-    editUserViewModel: EditUserViewModel = hiltViewModel()
-) {
-    EditUserRoute(navController = navController, userViewModel = userViewModel, editUserViewModel = editUserViewModel)
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditUserScreenContent(

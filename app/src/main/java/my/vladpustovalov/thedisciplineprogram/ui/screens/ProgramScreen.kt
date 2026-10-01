@@ -51,14 +51,6 @@ fun ProgramRoute(
     )
 }
 
-@Composable
-fun ProgramScreen(
-    navController: NavController,
-    viewModel: ProgramViewModel = hiltViewModel()
-) {
-    ProgramRoute(navController = navController, viewModel = viewModel)
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProgramScreenContent(
