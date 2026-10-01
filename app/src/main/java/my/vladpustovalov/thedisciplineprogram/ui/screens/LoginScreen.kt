@@ -2,7 +2,6 @@ package my.vladpustovalov.thedisciplineprogram.ui.screens
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,18 +23,19 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
-import androidx.core.net.toUri
 
 @Composable
 fun LoginScreen(
@@ -56,11 +56,11 @@ fun LoginScreen(
     if (viewModel.showingAlert) {
         AlertDialog(
             onDismissRequest = { viewModel.showingAlert = false },
-            title = { Text("Authentication failed") },
-            text = { Text(viewModel.errorMessage) },
+            title = { Text(stringResource(R.string.login_auth_failed_title)) },
+            text = { Text(viewModel.errorMessage.ifEmpty { stringResource(R.string.login_auth_failed_title) }) },
             confirmButton = {
                 TextButton(onClick = { viewModel.showingAlert = false }) {
-                    Text("OK")
+                    Text(stringResource(R.string.common_ok))
                 }
             }
         )
@@ -90,7 +90,7 @@ fun LoginScreen(
                 ) {
                     Spacer(modifier = Modifier.height(36.dp))
                     Text(
-                        text = "Welcome!",
+                        text = stringResource(R.string.login_welcome),
                         fontSize = 32.sp,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
@@ -105,7 +105,7 @@ fun LoginScreen(
                     TextField(
                         value = viewModel.email,
                         onValueChange = { viewModel.email = it },
-                        placeholder = { Text("Email", color = Color.Gray) },
+                        placeholder = { Text(stringResource(R.string.login_email_placeholder), color = Color.Gray) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Email,
@@ -128,7 +128,7 @@ fun LoginScreen(
                     TextField(
                         value = viewModel.password,
                         onValueChange = { viewModel.password = it },
-                        placeholder = { Text("Password", color = Color.Gray) },
+                        placeholder = { Text(stringResource(R.string.login_password_placeholder), color = Color.Gray) },
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(
@@ -193,7 +193,7 @@ fun LoginScreen(
                             )
                         } else {
                             Text(
-                                text = "Sign In",
+                                text = stringResource(R.string.login_sign_in_button),
                                 color = Color.White,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.SemiBold
@@ -211,7 +211,7 @@ fun LoginScreen(
                     ) {
                         SocialIconButton(
                             iconRes = R.drawable.ic_instagram,
-                            contentDescription = "Instagram",
+                            contentDescription = stringResource(R.string.login_social_instagram_cd),
                             onClick = {
                                 openUrl(
                                     context = context,
@@ -223,7 +223,7 @@ fun LoginScreen(
 
                         SocialIconButton(
                             iconRes = R.drawable.ic_telegram,
-                            contentDescription = "Telegram",
+                            contentDescription = stringResource(R.string.login_social_telegram_cd),
                             onClick = {
                                 openUrl(
                                     context = context,
@@ -235,7 +235,7 @@ fun LoginScreen(
 
                         SocialIconButton(
                             iconRes = R.drawable.ic_youtube,
-                            contentDescription = "YouTube",
+                            contentDescription = stringResource(R.string.login_social_youtube_cd),
                             onClick = {
                                 openUrl(
                                     context = context,

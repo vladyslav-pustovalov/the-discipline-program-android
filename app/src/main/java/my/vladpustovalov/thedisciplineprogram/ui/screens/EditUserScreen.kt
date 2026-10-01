@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.EditUserViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.UserViewModel
@@ -44,11 +46,11 @@ fun EditUserScreen(
     if (editUserViewModel.showingAlert) {
         AlertDialog(
             onDismissRequest = { editUserViewModel.showingAlert = false },
-            title = { Text("Something went wrong during user update") },
-            text = { Text(editUserViewModel.errorMessage) },
+            title = { Text(stringResource(R.string.edit_user_error_title)) },
+            text = { Text(editUserViewModel.errorMessage.ifEmpty { stringResource(R.string.edit_user_error_title) }) },
             confirmButton = {
                 TextButton(onClick = { editUserViewModel.showingAlert = false }) {
-                    Text("OK")
+                    Text(stringResource(R.string.common_ok))
                 }
             }
         )
@@ -58,10 +60,13 @@ fun EditUserScreen(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
-                title = { Text("Edit User", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.edit_user_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.common_back_cd)
+                        )
                     }
                 },
                 actions = {
@@ -83,7 +88,7 @@ fun EditUserScreen(
                                 }
                             }
                         ) {
-                            Text("Save", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.common_save), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -99,12 +104,12 @@ fun EditUserScreen(
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text("User Details", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+            Text(stringResource(R.string.edit_user_details_header), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
             OutlinedTextField(
                 value = editUserViewModel.firstName,
                 onValueChange = { editUserViewModel.firstName = it },
-                label = { Text("First Name") },
+                label = { Text(stringResource(R.string.edit_user_first_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -116,7 +121,7 @@ fun EditUserScreen(
             OutlinedTextField(
                 value = editUserViewModel.lastName,
                 onValueChange = { editUserViewModel.lastName = it },
-                label = { Text("Last Name") },
+                label = { Text(stringResource(R.string.edit_user_last_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Text,
@@ -128,7 +133,7 @@ fun EditUserScreen(
             OutlinedTextField(
                 value = editUserViewModel.phoneNumber,
                 onValueChange = { editUserViewModel.phoneNumber = it },
-                label = { Text("Phone Number") },
+                label = { Text(stringResource(R.string.edit_user_phone_number)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Phone,
@@ -140,7 +145,7 @@ fun EditUserScreen(
             OutlinedTextField(
                 value = editUserViewModel.dateOfBirth,
                 onValueChange = { editUserViewModel.dateOfBirth = it },
-                label = { Text("Date of Birth (YYYY-MM-DD)") },
+                label = { Text(stringResource(R.string.edit_user_date_of_birth)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Number,
@@ -168,7 +173,7 @@ fun EditUserScreen(
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text("Change Password", fontSize = 16.sp)
+                Text(stringResource(R.string.edit_user_change_password), fontSize = 16.sp)
             }
         }
     }

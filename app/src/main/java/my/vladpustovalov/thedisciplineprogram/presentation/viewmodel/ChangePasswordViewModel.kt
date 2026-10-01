@@ -1,5 +1,6 @@
 package my.vladpustovalov.thedisciplineprogram.presentation.viewmodel
 
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -12,7 +13,7 @@ import my.vladpustovalov.thedisciplineprogram.data.network.NetworkResult
 import my.vladpustovalov.thedisciplineprogram.data.repository.AuthRepository
 import my.vladpustovalov.thedisciplineprogram.data.repository.UserRepository
 import my.vladpustovalov.thedisciplineprogram.util.isValidPassword
-import my.vladpustovalov.thedisciplineprogram.util.passwordValidationMessage
+import my.vladpustovalov.thedisciplineprogram.util.passwordValidationResId
 import javax.inject.Inject
 
 @HiltViewModel
@@ -33,8 +34,8 @@ class ChangePasswordViewModel @Inject constructor(
         get() = newPassword == confirmNewPassword
     val isValidPassword: Boolean
         get() = newPassword.isValidPassword
-    val passwordValidationMessage: String?
-        get() = newPassword.passwordValidationMessage
+    val passwordValidationResId: Int?
+        @StringRes get() = newPassword.passwordValidationResId
     val isSaveButtonDisabled: Boolean
         get() = oldPassword.isBlank() ||
                 newPassword.isBlank() ||

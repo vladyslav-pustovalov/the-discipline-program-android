@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -20,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ChangePasswordViewModel
 
@@ -33,11 +35,11 @@ fun ChangePasswordScreen(
     if (changePasswordViewModel.showingAlert) {
         AlertDialog(
             onDismissRequest = { changePasswordViewModel.showingAlert = false },
-            title = { Text("Something went wrong during password change") },
-            text = { Text(changePasswordViewModel.errorMessage) },
+            title = { Text(stringResource(R.string.change_password_error_title)) },
+            text = { Text(changePasswordViewModel.errorMessage.ifEmpty { stringResource(R.string.change_password_error_title) }) },
             confirmButton = {
                 TextButton(onClick = { changePasswordViewModel.showingAlert = false }) {
-                    Text("OK")
+                    Text(stringResource(R.string.common_ok))
                 }
             }
         )
@@ -47,10 +49,13 @@ fun ChangePasswordScreen(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
-                title = { Text("Change password", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.change_password_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.common_back_cd)
+                        )
                     }
                 },
                 actions = {
@@ -70,7 +75,7 @@ fun ChangePasswordScreen(
                             },
                             enabled = !changePasswordViewModel.isSaveButtonDisabled
                         ) {
-                            Text("Save", fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
+                            Text(stringResource(R.string.common_save), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
                 }
@@ -90,7 +95,7 @@ fun ChangePasswordScreen(
             OutlinedTextField(
                 value = changePasswordViewModel.oldPassword,
                 onValueChange = { changePasswordViewModel.oldPassword = it },
-                label = { Text("Old Password") },
+                label = { Text(stringResource(R.string.change_password_old_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
@@ -103,7 +108,7 @@ fun ChangePasswordScreen(
             OutlinedTextField(
                 value = changePasswordViewModel.newPassword,
                 onValueChange = { changePasswordViewModel.newPassword = it },
-                label = { Text("New Password") },
+                label = { Text(stringResource(R.string.change_password_new_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
@@ -116,7 +121,7 @@ fun ChangePasswordScreen(
             OutlinedTextField(
                 value = changePasswordViewModel.confirmNewPassword,
                 onValueChange = { changePasswordViewModel.confirmNewPassword = it },
-                label = { Text("Confirm New Password") },
+                label = { Text(stringResource(R.string.change_password_confirm_new_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(
@@ -142,22 +147,22 @@ fun ChangePasswordScreen(
                 changePasswordViewModel.oldPassword.isEmpty() || changePasswordViewModel.newPassword.isEmpty() -> {}
                 changePasswordViewModel.isOldAndNewPasswordsTheSame -> {
                     Text(
-                        text = "New password should be different",
+                        text = stringResource(R.string.change_password_err_same),
                         color = Color.Red,
                         fontSize = 14.sp
                     )
                 }
                 !changePasswordViewModel.isNewPasswordConfirmed -> {
                     Text(
-                        text = "New password is not confirmed",
+                        text = stringResource(R.string.change_password_err_not_confirmed),
                         color = Color.Red,
                         fontSize = 14.sp
                     )
                 }
                 !changePasswordViewModel.isValidPassword -> {
-                    changePasswordViewModel.passwordValidationMessage?.let { message ->
+                    changePasswordViewModel.passwordValidationResId?.let { resId ->
                         Text(
-                            text = message,
+                            text = stringResource(resId),
                             color = Color.Red,
                             fontSize = 14.sp
                         )
@@ -165,7 +170,7 @@ fun ChangePasswordScreen(
                 }
                 else -> {
                     Text(
-                        text = "All is good",
+                        text = stringResource(R.string.change_password_all_good),
                         color = Color(0xFF2E7D32), // Green
                         fontSize = 14.sp
                     )

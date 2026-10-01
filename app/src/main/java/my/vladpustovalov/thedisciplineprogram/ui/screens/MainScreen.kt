@@ -10,8 +10,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 
 @Composable
@@ -27,14 +29,14 @@ fun MainScreen(
                 NavigationBarItem(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Program") },
-                    label = { Text("Program") }
+                    icon = { Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.nav_program)) },
+                    label = { Text(stringResource(R.string.nav_program)) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "User") },
-                    label = { Text("User") }
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = stringResource(R.string.nav_user)) },
+                    label = { Text(stringResource(R.string.nav_user)) }
                 )
             }
         }

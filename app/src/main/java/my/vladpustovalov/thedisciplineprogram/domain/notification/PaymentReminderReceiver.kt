@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
+import my.vladpustovalov.thedisciplineprogram.R
 
 class PaymentReminderReceiver : BroadcastReceiver() {
 
@@ -25,15 +26,15 @@ class PaymentReminderReceiver : BroadcastReceiver() {
 
         val channel = NotificationChannel(
             channelId,
-            "Payment Reminders",
+            context.getString(R.string.notification_channel_payment_reminders),
             NotificationManager.IMPORTANCE_DEFAULT
         )
         manager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(android.R.drawable.ic_dialog_info)
-            .setContentTitle("Payment Reminder")
-            .setContentText("Please complete your monthly payment for the Discipline Program.")
+            .setContentTitle(context.getString(R.string.notification_payment_reminder_title))
+            .setContentText(context.getString(R.string.notification_payment_reminder_text))
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
             .build()
