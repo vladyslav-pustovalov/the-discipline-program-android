@@ -57,7 +57,7 @@ fun MainScreenContent(
                 .padding(paddingValues)
         ) {
             when (selectedTab) {
-                0 -> ProgramRoute(navController = navController)
+                0 -> ProgramRoute()
                 1 -> UserRoute(navController = navController)
             }
         }

@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -24,6 +23,8 @@ import my.vladpustovalov.thedisciplineprogram.data.model.User
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.UserViewModel
+import my.vladpustovalov.thedisciplineprogram.ui.components.FullScreenError
+import my.vladpustovalov.thedisciplineprogram.ui.components.FullScreenLoading
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
 @Composable
@@ -85,19 +86,15 @@ fun UserScreenContent(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            when (val state = userState) {
+            when (userState) {
                 is UiState.Loading -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
-                    }
+                    FullScreenLoading()
                 }
                 is UiState.Error -> {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.user_error_prefix, state.message))
-                    }
+                    FullScreenError(message = stringResource(R.string.user_error_prefix, userState.message))
                 }
                 is UiState.Success -> {
-                    val user = state.data
+                    val user = userState.data
                     UserProfileDetails(user = user)
                 }
             }

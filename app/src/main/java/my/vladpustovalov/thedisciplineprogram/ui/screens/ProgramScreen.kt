@@ -17,12 +17,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.data.model.Block
 import my.vladpustovalov.thedisciplineprogram.data.model.Program
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ProgramViewModel
+import my.vladpustovalov.thedisciplineprogram.ui.components.FullScreenError
+import my.vladpustovalov.thedisciplineprogram.ui.components.FullScreenLoading
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -30,7 +31,6 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun ProgramRoute(
-    navController: NavController,
     viewModel: ProgramViewModel = hiltViewModel()
 ) {
     val programState by viewModel.programState.collectAsState()
@@ -142,36 +142,26 @@ fun ProgramScreenContent(
                 .padding(16.dp),
             contentAlignment = Alignment.Center
         ) {
-            when (val state = programState) {
+            when (programState) {
                 is UiState.Loading -> {
-                    CircularProgressIndicator()
+                    FullScreenLoading()
                 }
                 is UiState.Error -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (state.message.contains("404")) {
-                            Text(
-                                text = stringResource(R.string.program_no_program_today),
-                                style = MaterialTheme.typography.titleMedium,
-                                textAlign = TextAlign.Center
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.program_load_error),
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = onRetry) {
-                                Text(stringResource(R.string.common_retry))
-                            }
-                        }
+                    if (programState.message.contains("404")) {
+                        Text(
+                            text = stringResource(R.string.program_no_program_today),
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        FullScreenError(
+                            message = stringResource(R.string.program_load_error),
+                            onRetry = onRetry
+                        )
                     }
                 }
                 is UiState.Success -> {
-                    val program = state.data
+                    val program = programState.data
                     if (program.isRestDay) {
                         Text(
                             text = stringResource(R.string.program_rest_day),

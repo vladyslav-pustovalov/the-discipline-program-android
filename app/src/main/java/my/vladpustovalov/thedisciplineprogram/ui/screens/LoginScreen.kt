@@ -35,6 +35,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
+import my.vladpustovalov.thedisciplineprogram.ui.components.ErrorAlertDialog
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
 @Composable
@@ -53,15 +54,10 @@ fun LoginRoute(
     }
 
     if (viewModel.showingAlert) {
-        AlertDialog(
-            onDismissRequest = { viewModel.showingAlert = false },
-            title = { Text(stringResource(R.string.login_auth_failed_title)) },
-            text = { Text(viewModel.errorMessage.ifEmpty { stringResource(R.string.login_auth_failed_title) }) },
-            confirmButton = {
-                TextButton(onClick = { viewModel.showingAlert = false }) {
-                    Text(stringResource(R.string.common_ok))
-                }
-            }
+        ErrorAlertDialog(
+            title = stringResource(R.string.login_auth_failed_title),
+            message = viewModel.errorMessage,
+            onDismiss = { viewModel.showingAlert = false }
         )
     }
 

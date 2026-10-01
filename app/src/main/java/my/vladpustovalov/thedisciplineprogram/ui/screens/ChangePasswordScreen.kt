@@ -3,20 +3,14 @@ package my.vladpustovalov.thedisciplineprogram.ui.screens
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -24,6 +18,10 @@ import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ChangePasswordViewModel
+import my.vladpustovalov.thedisciplineprogram.ui.components.BackTopAppBar
+import my.vladpustovalov.thedisciplineprogram.ui.components.ErrorAlertDialog
+import my.vladpustovalov.thedisciplineprogram.ui.components.PasswordOutlinedTextField
+import my.vladpustovalov.thedisciplineprogram.ui.theme.SuccessGreen
 
 @Composable
 fun ChangePasswordRoute(
@@ -32,15 +30,10 @@ fun ChangePasswordRoute(
     changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
 ) {
     if (changePasswordViewModel.showingAlert) {
-        AlertDialog(
-            onDismissRequest = { changePasswordViewModel.showingAlert = false },
-            title = { Text(stringResource(R.string.change_password_error_title)) },
-            text = { Text(changePasswordViewModel.errorMessage.ifEmpty { stringResource(R.string.change_password_error_title) }) },
-            confirmButton = {
-                TextButton(onClick = { changePasswordViewModel.showingAlert = false }) {
-                    Text(stringResource(R.string.common_ok))
-                }
-            }
+        ErrorAlertDialog(
+            title = stringResource(R.string.change_password_error_title),
+            message = changePasswordViewModel.errorMessage,
+            onDismiss = { changePasswordViewModel.showingAlert = false }
         )
     }
 
@@ -67,7 +60,6 @@ fun ChangePasswordRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChangePasswordScreenContent(
     oldPassword: String,
@@ -88,32 +80,13 @@ fun ChangePasswordScreenContent(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.change_password_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back_cd)
-                        )
-                    }
-                },
-                actions = {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .padding(end = 12.dp)
-                        )
-                    } else {
-                        TextButton(
-                            onClick = onSaveClick,
-                            enabled = !isSaveButtonDisabled
-                        ) {
-                            Text(stringResource(R.string.common_save), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                        }
-                    }
-                }
+            BackTopAppBar(
+                title = stringResource(R.string.change_password_title),
+                onBackClick = onBackClick,
+                isLoading = isLoading,
+                actionText = stringResource(R.string.common_save),
+                onActionClick = onSaveClick,
+                isActionEnabled = !isSaveButtonDisabled
             )
         }
     ) { paddingValues ->
@@ -127,42 +100,27 @@ fun ChangePasswordScreenContent(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
+            PasswordOutlinedTextField(
                 value = oldPassword,
                 onValueChange = onOldPasswordChange,
-                label = { Text(stringResource(R.string.change_password_old_password)) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
-                ),
+                label = stringResource(R.string.change_password_old_password),
+                imeAction = ImeAction.Next,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            PasswordOutlinedTextField(
                 value = newPassword,
                 onValueChange = onNewPasswordChange,
-                label = { Text(stringResource(R.string.change_password_new_password)) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Next
-                ),
+                label = stringResource(R.string.change_password_new_password),
+                imeAction = ImeAction.Next,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
+            PasswordOutlinedTextField(
                 value = confirmNewPassword,
                 onValueChange = onConfirmNewPasswordChange,
-                label = { Text(stringResource(R.string.change_password_confirm_new_password)) },
-                singleLine = true,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Password,
-                    imeAction = ImeAction.Done
-                ),
+                label = stringResource(R.string.change_password_confirm_new_password),
+                imeAction = ImeAction.Done,
                 keyboardActions = KeyboardActions(
                     onDone = {
                         if (!isSaveButtonDisabled) {
@@ -203,7 +161,7 @@ fun ChangePasswordScreenContent(
                 else -> {
                     Text(
                         text = stringResource(R.string.change_password_all_good),
-                        color = Color(0xFF2E7D32), // Green
+                        color = SuccessGreen,
                         fontSize = 14.sp
                     )
                 }
