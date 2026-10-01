@@ -9,14 +9,6 @@ data class SignInDTO(
 )
 
 @Serializable
-data class SignUpDTO(
-    val username: String,
-    val password: String,
-    val firstName: String? = null,
-    val lastName: String? = null
-)
-
-@Serializable
 data class JwtDTO(
     val userId: Int,
     val accessToken: String,

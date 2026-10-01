@@ -5,8 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +23,8 @@ import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.EditUserViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.UserViewModel
+import my.vladpustovalov.thedisciplineprogram.ui.components.BackTopAppBar
+import my.vladpustovalov.thedisciplineprogram.ui.components.ErrorAlertDialog
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
 @Composable
@@ -43,15 +43,10 @@ fun EditUserRoute(
     }
 
     if (editUserViewModel.showingAlert) {
-        AlertDialog(
-            onDismissRequest = { editUserViewModel.showingAlert = false },
-            title = { Text(stringResource(R.string.edit_user_error_title)) },
-            text = { Text(editUserViewModel.errorMessage.ifEmpty { stringResource(R.string.edit_user_error_title) }) },
-            confirmButton = {
-                TextButton(onClick = { editUserViewModel.showingAlert = false }) {
-                    Text(stringResource(R.string.common_ok))
-                }
-            }
+        ErrorAlertDialog(
+            title = stringResource(R.string.edit_user_error_title),
+            message = editUserViewModel.errorMessage,
+            onDismiss = { editUserViewModel.showingAlert = false }
         )
     }
 
@@ -79,7 +74,6 @@ fun EditUserRoute(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditUserScreenContent(
     firstName: String,
@@ -98,29 +92,12 @@ fun EditUserScreenContent(
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
-            TopAppBar(
-                title = { Text(stringResource(R.string.edit_user_title), fontWeight = FontWeight.Bold) },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.common_back_cd)
-                        )
-                    }
-                },
-                actions = {
-                    if (isLoading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier
-                                .size(24.dp)
-                                .padding(end = 12.dp)
-                        )
-                    } else {
-                        TextButton(onClick = onSaveClick) {
-                            Text(stringResource(R.string.common_save), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
-                        }
-                    }
-                }
+            BackTopAppBar(
+                title = stringResource(R.string.edit_user_title),
+                onBackClick = onBackClick,
+                isLoading = isLoading,
+                actionText = stringResource(R.string.common_save),
+                onActionClick = onSaveClick
             )
         }
     ) { paddingValues ->

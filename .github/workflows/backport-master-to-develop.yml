@@ -1,0 +1,54 @@
+name: Backport master to develop
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  backport:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create or update backport branch
+        run: |
+          git checkout -B chore/master2develop
+          git push -f origin chore/master2develop
+
+      - name: Create or verify PR from master to develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh pr view chore/master2develop --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh pr create \
+              --base develop \
+              --head chore/master2develop \
+              --title "chore: backport master to develop" \
+              --body "Automated backport of master changes to develop branch."
+          else
+            echo "PR already exists for chore/master2develop."
+          fi
+
+      - name: Merge PR to develop
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if ! gh pr merge chore/master2develop --merge --delete-branch; then
+            echo "Direct merge not possible, attempting auto-merge..."
+            gh pr merge chore/master2develop --auto --merge --delete-branch || {
+              echo "::warning ::Auto-merge could not be completed (likely due to merge conflicts or required reviews). Please resolve manually."
+            }
+          fi
