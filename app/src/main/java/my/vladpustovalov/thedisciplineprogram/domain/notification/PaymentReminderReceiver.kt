@@ -12,7 +12,6 @@ class PaymentReminderReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         showNotification(context)
         
-        // Reschedule for next month
         val notificationManager = LocalNotificationManager(context)
         notificationManager.scheduleMonthlyPaymentReminder()
     }
@@ -29,7 +28,7 @@ class PaymentReminderReceiver : BroadcastReceiver() {
         manager.createNotificationChannel(channel)
 
         val notification = NotificationCompat.Builder(context, channelId)
-            .setSmallIcon(android.R.drawable.ic_dialog_info) // using built-in icon as fallback
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
             .setContentTitle("Payment Reminder")
             .setContentText("Please complete your monthly payment for the Discipline Program.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

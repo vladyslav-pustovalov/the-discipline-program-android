@@ -125,11 +125,8 @@ fun ChangePasswordScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Validation Feedback
             when {
-                changePasswordViewModel.oldPassword.isEmpty() || changePasswordViewModel.newPassword.isEmpty() -> {
-                    // Empty feedback
-                }
+                changePasswordViewModel.oldPassword.isEmpty() || changePasswordViewModel.newPassword.isEmpty() -> {}
                 changePasswordViewModel.isOldAndNewPasswordsTheSame -> {
                     Text(
                         text = "New password should be different",

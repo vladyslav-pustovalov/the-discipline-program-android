@@ -26,9 +26,7 @@ class LocalNotificationManager(private val context: Context) {
             set(Calendar.HOUR_OF_DAY, 9)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
-            
-            // If the current date is past the 1st of the month at 9 AM,
-            // schedule for the next month.
+
             if (timeInMillis <= System.currentTimeMillis()) {
                 add(Calendar.MONTH, 1)
             }

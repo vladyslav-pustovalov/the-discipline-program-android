@@ -20,7 +20,6 @@ fun AppNavGraph(
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val isLoggedIn by authViewModel.isLoggedIn.collectAsState()
-
     val startDestination = if (isLoggedIn) Screen.Main.route else Screen.Login.route
 
     NavHost(

@@ -19,19 +19,14 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val authRepository: AuthRepository
 ) : ViewModel() {
-
     var email by mutableStateOf("")
     var password by mutableStateOf("")
-
     var isLoading by mutableStateOf(false)
         private set
-
     var showingAlert by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
-
     private val _isLoggedIn = MutableStateFlow(authRepository.isLoggedIn())
     val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
-
     val isLoginButtonDisabled: Boolean
         get() = email.isBlank() || password.isBlank() || isLoading
 

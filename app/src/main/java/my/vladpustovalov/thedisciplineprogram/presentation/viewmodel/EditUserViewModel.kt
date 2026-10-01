@@ -16,15 +16,12 @@ import javax.inject.Inject
 class EditUserViewModel @Inject constructor(
     private val userRepository: UserRepository
 ) : ViewModel() {
-
     var firstName by mutableStateOf("")
     var lastName by mutableStateOf("")
     var phoneNumber by mutableStateOf("")
     var dateOfBirth by mutableStateOf("")
-
     var isLoading by mutableStateOf(false)
         private set
-
     var showingAlert by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
 

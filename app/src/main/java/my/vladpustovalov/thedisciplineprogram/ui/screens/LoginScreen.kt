@@ -88,7 +88,6 @@ fun LoginScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                // Email Field
                 TextField(
                     value = viewModel.email,
                     onValueChange = { viewModel.email = it },
@@ -112,7 +111,6 @@ fun LoginScreen(
                         .height(56.dp)
                 )
 
-                // Password Field
                 TextField(
                     value = viewModel.password,
                     onValueChange = { viewModel.password = it },
@@ -139,7 +137,6 @@ fun LoginScreen(
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                // Sign In Button
                 val isButtonDisabled = viewModel.isLoginButtonDisabled
                 val buttonBrush = if (!isButtonDisabled) {
                     Brush.linearGradient(
@@ -186,7 +183,6 @@ fun LoginScreen(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            // Social Media Buttons
             Row(
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
                 verticalAlignment = Alignment.CenterVertically

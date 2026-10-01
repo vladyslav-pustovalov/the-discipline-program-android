@@ -20,29 +20,21 @@ class ChangePasswordViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
-
     var oldPassword by mutableStateOf("")
     var newPassword by mutableStateOf("")
     var confirmNewPassword by mutableStateOf("")
-
     var isLoading by mutableStateOf(false)
         private set
-
     var showingAlert by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
-
     val isOldAndNewPasswordsTheSame: Boolean
         get() = newPassword.isNotEmpty() && oldPassword == newPassword
-
     val isNewPasswordConfirmed: Boolean
         get() = newPassword == confirmNewPassword
-
     val isValidPassword: Boolean
         get() = newPassword.isValidPassword
-
     val passwordValidationMessage: String?
         get() = newPassword.passwordValidationMessage
-
     val isSaveButtonDisabled: Boolean
         get() = oldPassword.isBlank() ||
                 newPassword.isBlank() ||

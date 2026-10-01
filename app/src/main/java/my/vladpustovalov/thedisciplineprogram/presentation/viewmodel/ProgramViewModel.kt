@@ -24,15 +24,11 @@ class ProgramViewModel @Inject constructor(
     private val programRepository: ProgramRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
-
     var programDate by mutableStateOf(LocalDate.now())
         private set
-
     var isShownPicker by mutableStateOf(false)
-
     private val _programState = MutableStateFlow<UiState<Program>>(UiState.Loading)
     val programState: StateFlow<UiState<Program>> = _programState.asStateFlow()
-
     private val dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
 
     init {
