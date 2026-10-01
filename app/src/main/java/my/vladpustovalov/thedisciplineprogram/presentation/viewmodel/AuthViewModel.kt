@@ -6,9 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import my.vladpustovalov.thedisciplineprogram.data.model.SignInDTO
 import my.vladpustovalov.thedisciplineprogram.data.network.NetworkResult
@@ -25,8 +26,15 @@ class AuthViewModel @Inject constructor(
         private set
     var showingAlert by mutableStateOf(false)
     var errorMessage by mutableStateOf("")
-    private val _isLoggedIn = MutableStateFlow(authRepository.isLoggedIn())
-    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn.asStateFlow()
+
+    val isLoggedIn: StateFlow<Boolean> = authRepository.tokenFlow
+        .map { !it.isNullOrEmpty() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = authRepository.isLoggedInSync()
+        )
+
     val isLoginButtonDisabled: Boolean
         get() = email.isBlank() || password.isBlank() || isLoading
 
@@ -39,7 +47,6 @@ class AuthViewModel @Inject constructor(
             when (val result = authRepository.signIn(SignInDTO(username = email, password = password))) {
                 is NetworkResult.Success -> {
                     isLoading = false
-                    _isLoggedIn.value = true
                     onSuccess()
                 }
                 is NetworkResult.Error -> {
@@ -57,9 +64,10 @@ class AuthViewModel @Inject constructor(
     }
 
     fun signOut() {
-        authRepository.logout()
-        _isLoggedIn.value = false
-        email = ""
-        password = ""
+        viewModelScope.launch {
+            authRepository.logout()
+            email = ""
+            password = ""
+        }
     }
 }

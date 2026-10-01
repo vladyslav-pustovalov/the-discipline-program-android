@@ -27,13 +27,13 @@ class UserViewModel @Inject constructor(
     }
 
     fun loadUser() {
-        val userId = authRepository.getUserId()
-        if (userId == -1) {
-            _userState.value = UiState.Error("User ID not found")
-            return
-        }
-
         viewModelScope.launch {
+            val userId = authRepository.getUserId()
+            if (userId == -1) {
+                _userState.value = UiState.Error("User ID not found")
+                return@launch
+            }
+
             _userState.value = UiState.Loading
             when (val result = userRepository.getUser(userId)) {
                 is NetworkResult.Success -> {

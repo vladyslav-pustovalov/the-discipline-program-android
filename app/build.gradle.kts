@@ -78,7 +78,6 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
 
     // Storage
-    implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.datastore.preferences)
 
     // Coroutines

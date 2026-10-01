@@ -38,14 +38,15 @@ class ProgramViewModel @Inject constructor(
     fun loadProgram(date: LocalDate = programDate) {
         programDate = date
         val dateString = date.format(dateFormatter)
-        val userId = authRepository.getUserId()
-
-        if (userId == -1) {
-            _programState.value = UiState.Error("User ID not found")
-            return
-        }
 
         viewModelScope.launch {
+            val userId = authRepository.getUserId()
+
+            if (userId == -1) {
+                _programState.value = UiState.Error("User ID not found")
+                return@launch
+            }
+
             _programState.value = UiState.Loading
             when (val result = programRepository.getProgram(userId, dateString)) {
                 is NetworkResult.Success -> {

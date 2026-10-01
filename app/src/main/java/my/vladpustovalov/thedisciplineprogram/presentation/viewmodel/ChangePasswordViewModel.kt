@@ -45,10 +45,10 @@ class ChangePasswordViewModel @Inject constructor(
                 isLoading
 
     fun saveNewPassword(onSuccess: () -> Unit) {
-        val userId = authRepository.getUserId()
-        if (userId == -1 || isSaveButtonDisabled) return
-
         viewModelScope.launch {
+            val userId = authRepository.getUserId()
+            if (userId == -1 || isSaveButtonDisabled) return@launch
+
             isLoading = true
             showingAlert = false
             val dto = ChangePasswordDTO(

@@ -8,7 +8,7 @@ class AuthInterceptor(private val tokenManager: TokenManager) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val requestBuilder = chain.request().newBuilder()
         
-        tokenManager.getToken()?.let { token ->
+        tokenManager.getTokenSync()?.let { token ->
             val headerValue = if (token.startsWith("Bearer ", ignoreCase = true)) {
                 token
             } else {
