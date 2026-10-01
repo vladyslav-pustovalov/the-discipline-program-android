@@ -2,6 +2,7 @@ package my.vladpustovalov.thedisciplineprogram.ui.screens
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -43,6 +44,7 @@ fun ChangePasswordScreen(
     }
 
     Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
                 title = { Text("Change password", fontWeight = FontWeight.Bold) },
@@ -79,6 +81,7 @@ fun ChangePasswordScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .consumeWindowInsets(paddingValues)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -119,6 +122,16 @@ fun ChangePasswordScreen(
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.Password,
                     imeAction = ImeAction.Done
+                ),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (!changePasswordViewModel.isSaveButtonDisabled) {
+                            changePasswordViewModel.saveNewPassword {
+                                authViewModel.signOut()
+                                navController.popBackStack()
+                            }
+                        }
+                    }
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
