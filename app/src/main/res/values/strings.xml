@@ -1,4 +1,81 @@
 <resources>
     <string name="app_name">The Discipline Program</string>
     <string name="app_short_name">TDP</string>
+
+    <!-- Common -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Cancel</string>
+    <string name="common_retry">Retry</string>
+    <string name="common_save">Save</string>
+    <string name="common_back_cd">Back</string>
+
+    <!-- Navigation -->
+    <string name="nav_program">Program</string>
+    <string name="nav_user">User</string>
+
+    <!-- Login Screen -->
+    <string name="login_auth_failed_title">Authentication failed</string>
+    <string name="login_welcome">Welcome!</string>
+    <string name="login_email_placeholder">Email</string>
+    <string name="login_password_placeholder">Password</string>
+    <string name="login_sign_in_button">Sign In</string>
+    <string name="login_social_instagram_cd">Instagram</string>
+    <string name="login_social_telegram_cd">Telegram</string>
+    <string name="login_social_youtube_cd">YouTube</string>
+
+    <!-- Program Screen -->
+    <string name="program_select_date_title">Select date</string>
+    <string name="program_prev_day_cd">Previous Day</string>
+    <string name="program_select_date_cd">Select Date</string>
+    <string name="program_next_day_cd">Next Day</string>
+    <string name="program_no_program_today">There is no program for today</string>
+    <string name="program_load_error">Something went wrong with loading today\'s program</string>
+    <string name="program_rest_day">Today is the rest day</string>
+    <string name="program_training_number">Training number: %1$d</string>
+
+    <!-- User Profile Screen -->
+    <string name="user_profile_title">Profile</string>
+    <string name="user_sign_out">Sign Out</string>
+    <string name="user_edit">Edit</string>
+    <string name="user_error_prefix">Error: %1$s</string>
+    <string name="user_label_email">Email</string>
+    <string name="user_label_first_name">First name</string>
+    <string name="user_label_last_name">Last name</string>
+    <string name="user_label_level">Level</string>
+    <string name="user_label_plan">Plan</string>
+    <string name="user_label_birthday">Birthday</string>
+    <string name="user_label_phone">Phone</string>
+
+    <!-- Edit User Screen -->
+    <string name="edit_user_error_title">Something went wrong during user update</string>
+    <string name="edit_user_title">Edit User</string>
+    <string name="edit_user_details_header">User Details</string>
+    <string name="edit_user_first_name">First Name</string>
+    <string name="edit_user_last_name">Last Name</string>
+    <string name="edit_user_phone_number">Phone Number</string>
+    <string name="edit_user_date_of_birth">Date of Birth (YYYY-MM-DD)</string>
+    <string name="edit_user_change_password">Change Password</string>
+
+    <!-- Change Password Screen -->
+    <string name="change_password_error_title">Something went wrong during password change</string>
+    <string name="change_password_title">Change password</string>
+    <string name="change_password_old_password">Old Password</string>
+    <string name="change_password_new_password">New Password</string>
+    <string name="change_password_confirm_new_password">Confirm New Password</string>
+    <string name="change_password_err_same">New password should be different</string>
+    <string name="change_password_err_not_confirmed">New password is not confirmed</string>
+    <string name="change_password_all_good">All is good</string>
+
+    <!-- Password Validation -->
+    <string name="password_validation_length">Password must be 6–32 characters long.</string>
+    <string name="password_validation_disallowed_chars">Password contains disallowed characters (e.g. \", \', \\, &lt;, &gt;, {, }, [, ], (, ), `, or space).</string>
+    <string name="password_validation_uppercase">Password must contain at least one uppercase letter.</string>
+    <string name="password_validation_lowercase">Password must contain at least one lowercase letter.</string>
+    <string name="password_validation_digit">Password must contain at least one digit.</string>
+    <string name="password_validation_special_char">Password must contain at least one special character (e.g. !@#$%^&amp;*).</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_payment_reminders">Payment Reminders</string>
+    <string name="notification_payment_reminder_title">Payment Reminder</string>
+    <string name="notification_payment_reminder_text">Please complete your monthly payment for the Discipline Program.</string>
 </resources>

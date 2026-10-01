@@ -11,8 +11,6 @@ import my.vladpustovalov.thedisciplineprogram.data.local.TokenManager
 import my.vladpustovalov.thedisciplineprogram.data.network.AuthInterceptor
 import my.vladpustovalov.thedisciplineprogram.data.network.api.AuthService
 import my.vladpustovalov.thedisciplineprogram.data.network.api.ProgramService
-import my.vladpustovalov.thedisciplineprogram.data.network.api.TrainingLevelService
-import my.vladpustovalov.thedisciplineprogram.data.network.api.UserPlansService
 import my.vladpustovalov.thedisciplineprogram.data.network.api.UserService
 import my.vladpustovalov.thedisciplineprogram.util.Constants
 import okhttp3.MediaType.Companion.toMediaType
@@ -77,16 +75,6 @@ object NetworkModule {
     @Singleton
     fun provideProgramService(retrofit: Retrofit): ProgramService =
         retrofit.create(ProgramService::class.java)
-
-    @Provides
-    @Singleton
-    fun provideTrainingLevelService(retrofit: Retrofit): TrainingLevelService =
-        retrofit.create(TrainingLevelService::class.java)
-
-    @Provides
-    @Singleton
-    fun provideUserPlansService(retrofit: Retrofit): UserPlansService =
-        retrofit.create(UserPlansService::class.java)
 
     @Provides
     @Singleton

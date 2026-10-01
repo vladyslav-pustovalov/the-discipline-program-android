@@ -1,14 +1,17 @@
 package my.vladpustovalov.thedisciplineprogram.domain.notification
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.RequiresPermission
 import java.util.Calendar
 
 class LocalNotificationManager(private val context: Context) {
 
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleMonthlyPaymentReminder() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
@@ -26,9 +29,7 @@ class LocalNotificationManager(private val context: Context) {
             set(Calendar.HOUR_OF_DAY, 9)
             set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
-            
-            // If the current date is past the 1st of the month at 9 AM,
-            // schedule for the next month.
+
             if (timeInMillis <= System.currentTimeMillis()) {
                 add(Calendar.MONTH, 1)
             }
