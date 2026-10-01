@@ -7,8 +7,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
@@ -62,169 +65,187 @@ fun LoginScreen(
         )
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Gray.copy(alpha = 0.03f))
-    ) {
-        Column(
+    Scaffold(
+        contentWindowInsets = WindowInsets.safeDrawing,
+        containerColor = Color.Gray.copy(alpha = 0.03f)
+    ) { innerPadding ->
+        BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(innerPadding)
+                .consumeWindowInsets(innerPadding)
+                .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(60.dp))
-
-            Text(
-                text = "Welcome!",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Spacer(modifier = Modifier.weight(1f))
-
             Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .defaultMinSize(minHeight = maxHeight)
+                    .padding(horizontal = 24.dp, vertical = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(15.dp)
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                TextField(
-                    value = viewModel.email,
-                    onValueChange = { viewModel.email = it },
-                    placeholder = { Text("Email", color = Color.Gray) },
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Email,
-                        imeAction = ImeAction.Next
-                    ),
-                    shape = RoundedCornerShape(30.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(56.dp)
-                )
-
-                TextField(
-                    value = viewModel.password,
-                    onValueChange = { viewModel.password = it },
-                    placeholder = { Text("Password", color = Color.Gray) },
-                    singleLine = true,
-                    visualTransformation = PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
-                    ),
-                    shape = RoundedCornerShape(30.dp),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        disabledContainerColor = Color.Gray.copy(alpha = 0.1f),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(56.dp)
-                )
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                val isButtonDisabled = viewModel.isLoginButtonDisabled
-                val buttonBrush = if (!isButtonDisabled) {
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color.Gray.copy(alpha = 0.2f),
-                            Color.Gray.copy(alpha = 0.8f)
-                        )
-                    )
-                } else {
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color.Gray.copy(alpha = 0.5f),
-                            Color.Gray.copy(alpha = 0.5f)
-                        )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Spacer(modifier = Modifier.height(36.dp))
+                    Text(
+                        text = "Welcome!",
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
 
-                Box(
-                    modifier = Modifier
-                        .width(300.dp)
-                        .height(60.dp)
-                        .clip(RoundedCornerShape(30.dp))
-                        .background(buttonBrush)
-                        .clickable(enabled = !isButtonDisabled) {
-                            viewModel.performLogin()
-                        },
-                    contentAlignment = Alignment.Center
+                Column(
+                    modifier = Modifier.padding(vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
-                    if (viewModel.isLoading) {
-                        CircularProgressIndicator(
-                            color = Color.White,
-                            modifier = Modifier.size(24.dp)
+                    TextField(
+                        value = viewModel.email,
+                        onValueChange = { viewModel.email = it },
+                        placeholder = { Text("Email", color = Color.Gray) },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Email,
+                            imeAction = ImeAction.Next
+                        ),
+                        shape = RoundedCornerShape(30.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
+                            unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
+                            disabledContainerColor = Color.Gray.copy(alpha = 0.1f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(56.dp)
+                    )
+
+                    TextField(
+                        value = viewModel.password,
+                        onValueChange = { viewModel.password = it },
+                        placeholder = { Text("Password", color = Color.Gray) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Password,
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (!viewModel.isLoginButtonDisabled) {
+                                    viewModel.performLogin()
+                                }
+                            }
+                        ),
+                        shape = RoundedCornerShape(30.dp),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = Color.Gray.copy(alpha = 0.1f),
+                            unfocusedContainerColor = Color.Gray.copy(alpha = 0.1f),
+                            disabledContainerColor = Color.Gray.copy(alpha = 0.1f),
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(56.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    val isButtonDisabled = viewModel.isLoginButtonDisabled
+                    val buttonBrush = if (!isButtonDisabled) {
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.Gray.copy(alpha = 0.2f),
+                                Color.Gray.copy(alpha = 0.8f)
+                            )
                         )
                     } else {
-                        Text(
-                            text = "Sign In",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
+                        Brush.linearGradient(
+                            colors = listOf(
+                                Color.Gray.copy(alpha = 0.5f),
+                                Color.Gray.copy(alpha = 0.5f)
+                            )
+                        )
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(300.dp)
+                            .height(60.dp)
+                            .clip(RoundedCornerShape(30.dp))
+                            .background(buttonBrush)
+                            .clickable(enabled = !isButtonDisabled) {
+                                viewModel.performLogin()
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (viewModel.isLoading) {
+                            CircularProgressIndicator(
+                                color = Color.White,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Sign In",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
+
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        SocialIconButton(
+                            iconRes = R.drawable.ic_instagram,
+                            contentDescription = "Instagram",
+                            onClick = {
+                                openUrl(
+                                    context = context,
+                                    appUrl = "instagram://user?username=the_discipline_program",
+                                    webUrl = "https://instagram.com/the_discipline_program"
+                                )
+                            }
+                        )
+
+                        SocialIconButton(
+                            iconRes = R.drawable.ic_telegram,
+                            contentDescription = "Telegram",
+                            onClick = {
+                                openUrl(
+                                    context = context,
+                                    appUrl = "tg://resolve?domain=the_discipline_channel",
+                                    webUrl = "https://t.me/the_discipline_channel"
+                                )
+                            }
+                        )
+
+                        SocialIconButton(
+                            iconRes = R.drawable.ic_youtube,
+                            contentDescription = "YouTube",
+                            onClick = {
+                                openUrl(
+                                    context = context,
+                                    appUrl = "youtube://@The_Discipline_Program/shorts",
+                                    webUrl = "https://www.youtube.com/@The_Discipline_Program/shorts"
+                                )
+                            }
                         )
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                SocialIconButton(
-                    iconRes = R.drawable.ic_instagram,
-                    contentDescription = "Instagram",
-                    onClick = {
-                        openUrl(
-                            context = context,
-                            appUrl = "instagram://user?username=the_discipline_program",
-                            webUrl = "https://instagram.com/the_discipline_program"
-                        )
-                    }
-                )
-
-                SocialIconButton(
-                    iconRes = R.drawable.ic_telegram,
-                    contentDescription = "Telegram",
-                    onClick = {
-                        openUrl(
-                            context = context,
-                            appUrl = "tg://resolve?domain=the_discipline_channel",
-                            webUrl = "https://t.me/the_discipline_channel"
-                        )
-                    }
-                )
-
-                SocialIconButton(
-                    iconRes = R.drawable.ic_youtube,
-                    contentDescription = "YouTube",
-                    onClick = {
-                        openUrl(
-                            context = context,
-                            appUrl = "youtube://@The_Discipline_Program/shorts",
-                            webUrl = "https://www.youtube.com/@The_Discipline_Program/shorts"
-                        )
-                    }
-                )
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
