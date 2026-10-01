@@ -22,6 +22,8 @@ import my.vladpustovalov.thedisciplineprogram.data.model.Block
 import my.vladpustovalov.thedisciplineprogram.data.model.Program
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ProgramViewModel
+import my.vladpustovalov.thedisciplineprogram.ui.components.FullScreenError
+import my.vladpustovalov.thedisciplineprogram.ui.components.FullScreenLoading
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
@@ -142,30 +144,20 @@ fun ProgramScreenContent(
         ) {
             when (programState) {
                 is UiState.Loading -> {
-                    CircularProgressIndicator()
+                    FullScreenLoading()
                 }
                 is UiState.Error -> {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (programState.message.contains("404")) {
-                            Text(
-                                text = stringResource(R.string.program_no_program_today),
-                                style = MaterialTheme.typography.titleMedium,
-                                textAlign = TextAlign.Center
-                            )
-                        } else {
-                            Text(
-                                text = stringResource(R.string.program_load_error),
-                                style = MaterialTheme.typography.bodyLarge,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = onRetry) {
-                                Text(stringResource(R.string.common_retry))
-                            }
-                        }
+                    if (programState.message.contains("404")) {
+                        Text(
+                            text = stringResource(R.string.program_no_program_today),
+                            style = MaterialTheme.typography.titleMedium,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        FullScreenError(
+                            message = stringResource(R.string.program_load_error),
+                            onRetry = onRetry
+                        )
                     }
                 }
                 is UiState.Success -> {
