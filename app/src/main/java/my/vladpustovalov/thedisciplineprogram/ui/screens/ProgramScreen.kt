@@ -20,31 +20,70 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.data.model.Block
+import my.vladpustovalov.thedisciplineprogram.data.model.Program
 import my.vladpustovalov.thedisciplineprogram.domain.state.UiState
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ProgramViewModel
 import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProgramRoute(
+    navController: NavController,
+    viewModel: ProgramViewModel = hiltViewModel()
+) {
+    val programState by viewModel.programState.collectAsState()
+
+    ProgramScreenContent(
+        programState = programState,
+        programDate = viewModel.programDate,
+        isShownPicker = viewModel.isShownPicker,
+        onPreviousDayClick = { viewModel.loadPreviousDay() },
+        onNextDayClick = { viewModel.loadNextDay() },
+        onSelectDateClick = { viewModel.isShownPicker = true },
+        onDismissPicker = { viewModel.isShownPicker = false },
+        onDateSelected = { selectedDate ->
+            viewModel.loadProgram(selectedDate)
+            viewModel.isShownPicker = false
+        },
+        onRetry = { viewModel.loadProgram() }
+    )
+}
+
 @Composable
 fun ProgramScreen(
     navController: NavController,
     viewModel: ProgramViewModel = hiltViewModel()
 ) {
-    val programState by viewModel.programState.collectAsState()
+    ProgramRoute(navController = navController, viewModel = viewModel)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ProgramScreenContent(
+    programState: UiState<Program>,
+    programDate: LocalDate,
+    isShownPicker: Boolean,
+    onPreviousDayClick: () -> Unit,
+    onNextDayClick: () -> Unit,
+    onSelectDateClick: () -> Unit,
+    onDismissPicker: () -> Unit,
+    onDateSelected: (LocalDate) -> Unit,
+    onRetry: () -> Unit
+) {
     val dateTitleFormatter = remember { DateTimeFormatter.ofPattern("EEEE dd.MM.yy") }
 
-    if (viewModel.isShownPicker) {
+    if (isShownPicker) {
         val datePickerState = rememberDatePickerState(
-            initialSelectedDateMillis = viewModel.programDate
+            initialSelectedDateMillis = programDate
                 .atStartOfDay(ZoneId.systemDefault())
                 .toInstant()
                 .toEpochMilli()
         )
 
         DatePickerDialog(
-            onDismissRequest = { viewModel.isShownPicker = false },
+            onDismissRequest = onDismissPicker,
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -52,16 +91,15 @@ fun ProgramScreen(
                             val selectedLocalDate = Instant.ofEpochMilli(millis)
                                 .atZone(ZoneId.systemDefault())
                                 .toLocalDate()
-                            viewModel.loadProgram(selectedLocalDate)
-                        }
-                        viewModel.isShownPicker = false
+                            onDateSelected(selectedLocalDate)
+                        } ?: onDismissPicker()
                     }
                 ) {
                     Text(stringResource(R.string.program_select_date_title))
                 }
             },
             dismissButton = {
-                TextButton(onClick = { viewModel.isShownPicker = false }) {
+                TextButton(onClick = onDismissPicker) {
                     Text(stringResource(R.string.common_cancel))
                 }
             }
@@ -75,13 +113,13 @@ fun ProgramScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = viewModel.programDate.format(dateTitleFormatter),
+                        text = programDate.format(dateTitleFormatter),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.SemiBold
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { viewModel.loadPreviousDay() }) {
+                    IconButton(onClick = onPreviousDayClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                             contentDescription = stringResource(R.string.program_prev_day_cd)
@@ -89,13 +127,13 @@ fun ProgramScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { viewModel.isShownPicker = true }) {
+                    IconButton(onClick = onSelectDateClick) {
                         Icon(
                             imageVector = Icons.Default.DateRange,
                             contentDescription = stringResource(R.string.program_select_date_cd)
                         )
                     }
-                    IconButton(onClick = { viewModel.loadNextDay() }) {
+                    IconButton(onClick = onNextDayClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                             contentDescription = stringResource(R.string.program_next_day_cd)
@@ -134,7 +172,7 @@ fun ProgramScreen(
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(12.dp))
-                            Button(onClick = { viewModel.loadProgram() }) {
+                            Button(onClick = onRetry) {
                                 Text(stringResource(R.string.common_retry))
                             }
                         }

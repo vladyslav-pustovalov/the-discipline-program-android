@@ -38,11 +38,10 @@ import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewMod
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
 @Composable
-fun LoginScreen(
+fun LoginRoute(
     navController: NavController,
     viewModel: AuthViewModel = hiltViewModel()
 ) {
-    val context = LocalContext.current
     val isLoggedIn by viewModel.isLoggedIn.collectAsState()
 
     LaunchedEffect(isLoggedIn) {
@@ -65,6 +64,37 @@ fun LoginScreen(
             }
         )
     }
+
+    LoginScreenContent(
+        email = viewModel.email,
+        password = viewModel.password,
+        isLoading = viewModel.isLoading,
+        isLoginButtonDisabled = viewModel.isLoginButtonDisabled,
+        onEmailChange = { viewModel.email = it },
+        onPasswordChange = { viewModel.password = it },
+        onLoginClick = { viewModel.performLogin() }
+    )
+}
+
+@Composable
+fun LoginScreen(
+    navController: NavController,
+    viewModel: AuthViewModel = hiltViewModel()
+) {
+    LoginRoute(navController = navController, viewModel = viewModel)
+}
+
+@Composable
+fun LoginScreenContent(
+    email: String,
+    password: String,
+    isLoading: Boolean,
+    isLoginButtonDisabled: Boolean,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onLoginClick: () -> Unit
+) {
+    val context = LocalContext.current
 
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -103,8 +133,8 @@ fun LoginScreen(
                     verticalArrangement = Arrangement.spacedBy(15.dp)
                 ) {
                     TextField(
-                        value = viewModel.email,
-                        onValueChange = { viewModel.email = it },
+                        value = email,
+                        onValueChange = onEmailChange,
                         placeholder = { Text(stringResource(R.string.login_email_placeholder), color = Color.Gray) },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(
@@ -126,8 +156,8 @@ fun LoginScreen(
                     )
 
                     TextField(
-                        value = viewModel.password,
-                        onValueChange = { viewModel.password = it },
+                        value = password,
+                        onValueChange = onPasswordChange,
                         placeholder = { Text(stringResource(R.string.login_password_placeholder), color = Color.Gray) },
                         singleLine = true,
                         visualTransformation = PasswordVisualTransformation(),
@@ -137,8 +167,8 @@ fun LoginScreen(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
-                                if (!viewModel.isLoginButtonDisabled) {
-                                    viewModel.performLogin()
+                                if (!isLoginButtonDisabled) {
+                                    onLoginClick()
                                 }
                             }
                         ),
@@ -158,8 +188,7 @@ fun LoginScreen(
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    val isButtonDisabled = viewModel.isLoginButtonDisabled
-                    val buttonBrush = if (!isButtonDisabled) {
+                    val buttonBrush = if (!isLoginButtonDisabled) {
                         Brush.linearGradient(
                             colors = listOf(
                                 Color.Gray.copy(alpha = 0.2f),
@@ -181,12 +210,12 @@ fun LoginScreen(
                             .height(60.dp)
                             .clip(RoundedCornerShape(30.dp))
                             .background(buttonBrush)
-                            .clickable(enabled = !isButtonDisabled) {
-                                viewModel.performLogin()
+                            .clickable(enabled = !isLoginButtonDisabled) {
+                                onLoginClick()
                             },
                         contentAlignment = Alignment.Center
                     ) {
-                        if (viewModel.isLoading) {
+                        if (isLoading) {
                             CircularProgressIndicator(
                                 color = Color.White,
                                 modifier = Modifier.size(24.dp)

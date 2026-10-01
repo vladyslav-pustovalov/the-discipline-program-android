@@ -25,9 +25,8 @@ import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.ChangePasswordViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChangePasswordScreen(
+fun ChangePasswordRoute(
     navController: NavController,
     authViewModel: AuthViewModel = hiltViewModel(),
     changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
@@ -45,13 +44,67 @@ fun ChangePasswordScreen(
         )
     }
 
+    ChangePasswordScreenContent(
+        oldPassword = changePasswordViewModel.oldPassword,
+        newPassword = changePasswordViewModel.newPassword,
+        confirmNewPassword = changePasswordViewModel.confirmNewPassword,
+        isLoading = changePasswordViewModel.isLoading,
+        isSaveButtonDisabled = changePasswordViewModel.isSaveButtonDisabled,
+        isOldAndNewPasswordsTheSame = changePasswordViewModel.isOldAndNewPasswordsTheSame,
+        isNewPasswordConfirmed = changePasswordViewModel.isNewPasswordConfirmed,
+        isValidPassword = changePasswordViewModel.isValidPassword,
+        passwordValidationResId = changePasswordViewModel.passwordValidationResId,
+        onOldPasswordChange = { changePasswordViewModel.oldPassword = it },
+        onNewPasswordChange = { changePasswordViewModel.newPassword = it },
+        onConfirmNewPasswordChange = { changePasswordViewModel.confirmNewPassword = it },
+        onBackClick = { navController.popBackStack() },
+        onSaveClick = {
+            changePasswordViewModel.saveNewPassword {
+                authViewModel.signOut()
+                navController.popBackStack()
+            }
+        }
+    )
+}
+
+@Composable
+fun ChangePasswordScreen(
+    navController: NavController,
+    authViewModel: AuthViewModel = hiltViewModel(),
+    changePasswordViewModel: ChangePasswordViewModel = hiltViewModel()
+) {
+    ChangePasswordRoute(
+        navController = navController,
+        authViewModel = authViewModel,
+        changePasswordViewModel = changePasswordViewModel
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ChangePasswordScreenContent(
+    oldPassword: String,
+    newPassword: String,
+    confirmNewPassword: String,
+    isLoading: Boolean,
+    isSaveButtonDisabled: Boolean,
+    isOldAndNewPasswordsTheSame: Boolean,
+    isNewPasswordConfirmed: Boolean,
+    isValidPassword: Boolean,
+    passwordValidationResId: Int?,
+    onOldPasswordChange: (String) -> Unit,
+    onNewPasswordChange: (String) -> Unit,
+    onConfirmNewPasswordChange: (String) -> Unit,
+    onBackClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.change_password_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.common_back_cd)
@@ -59,7 +112,7 @@ fun ChangePasswordScreen(
                     }
                 },
                 actions = {
-                    if (changePasswordViewModel.isLoading) {
+                    if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .size(24.dp)
@@ -67,13 +120,8 @@ fun ChangePasswordScreen(
                         )
                     } else {
                         TextButton(
-                            onClick = {
-                                changePasswordViewModel.saveNewPassword {
-                                    authViewModel.signOut()
-                                    navController.popBackStack()
-                                }
-                            },
-                            enabled = !changePasswordViewModel.isSaveButtonDisabled
+                            onClick = onSaveClick,
+                            enabled = !isSaveButtonDisabled
                         ) {
                             Text(stringResource(R.string.common_save), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         }
@@ -93,8 +141,8 @@ fun ChangePasswordScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             OutlinedTextField(
-                value = changePasswordViewModel.oldPassword,
-                onValueChange = { changePasswordViewModel.oldPassword = it },
+                value = oldPassword,
+                onValueChange = onOldPasswordChange,
                 label = { Text(stringResource(R.string.change_password_old_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -106,8 +154,8 @@ fun ChangePasswordScreen(
             )
 
             OutlinedTextField(
-                value = changePasswordViewModel.newPassword,
-                onValueChange = { changePasswordViewModel.newPassword = it },
+                value = newPassword,
+                onValueChange = onNewPasswordChange,
                 label = { Text(stringResource(R.string.change_password_new_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -119,8 +167,8 @@ fun ChangePasswordScreen(
             )
 
             OutlinedTextField(
-                value = changePasswordViewModel.confirmNewPassword,
-                onValueChange = { changePasswordViewModel.confirmNewPassword = it },
+                value = confirmNewPassword,
+                onValueChange = onConfirmNewPasswordChange,
                 label = { Text(stringResource(R.string.change_password_confirm_new_password)) },
                 singleLine = true,
                 visualTransformation = PasswordVisualTransformation(),
@@ -130,11 +178,8 @@ fun ChangePasswordScreen(
                 ),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (!changePasswordViewModel.isSaveButtonDisabled) {
-                            changePasswordViewModel.saveNewPassword {
-                                authViewModel.signOut()
-                                navController.popBackStack()
-                            }
+                        if (!isSaveButtonDisabled) {
+                            onSaveClick()
                         }
                     }
                 ),
@@ -144,23 +189,23 @@ fun ChangePasswordScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             when {
-                changePasswordViewModel.oldPassword.isEmpty() || changePasswordViewModel.newPassword.isEmpty() -> {}
-                changePasswordViewModel.isOldAndNewPasswordsTheSame -> {
+                oldPassword.isEmpty() || newPassword.isEmpty() -> {}
+                isOldAndNewPasswordsTheSame -> {
                     Text(
                         text = stringResource(R.string.change_password_err_same),
                         color = Color.Red,
                         fontSize = 14.sp
                     )
                 }
-                !changePasswordViewModel.isNewPasswordConfirmed -> {
+                !isNewPasswordConfirmed -> {
                     Text(
                         text = stringResource(R.string.change_password_err_not_confirmed),
                         color = Color.Red,
                         fontSize = 14.sp
                     )
                 }
-                !changePasswordViewModel.isValidPassword -> {
-                    changePasswordViewModel.passwordValidationResId?.let { resId ->
+                !isValidPassword -> {
+                    passwordValidationResId?.let { resId ->
                         Text(
                             text = stringResource(resId),
                             color = Color.Red,

@@ -26,19 +26,41 @@ import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewMod
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.UserViewModel
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserRoute(
+    navController: NavController,
+    userViewModel: UserViewModel = hiltViewModel(),
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
+    val userState by userViewModel.userState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        userViewModel.loadUser()
+    }
+
+    UserScreenContent(
+        userState = userState,
+        onSignOut = { authViewModel.signOut() },
+        onEditUser = { navController.navigate(Screen.EditUser.route) }
+    )
+}
+
 @Composable
 fun UserScreen(
     navController: NavController,
     viewModel: UserViewModel = hiltViewModel(),
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
-    val userState by viewModel.userState.collectAsState()
+    UserRoute(navController = navController, userViewModel = viewModel, authViewModel = authViewModel)
+}
 
-    LaunchedEffect(Unit) {
-        viewModel.loadUser()
-    }
-
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UserScreenContent(
+    userState: UiState<User>,
+    onSignOut: () -> Unit,
+    onEditUser: () -> Unit
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -51,7 +73,7 @@ fun UserScreen(
                             .background(Color.Gray.copy(alpha = 0.3f))
                     ) {
                         TextButton(
-                            onClick = { authViewModel.signOut() },
+                            onClick = onSignOut,
                             contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
                         ) {
                             Text(stringResource(R.string.user_sign_out), color = Color.Red, fontSize = 14.sp)
@@ -59,7 +81,7 @@ fun UserScreen(
                     }
                 },
                 actions = {
-                    TextButton(onClick = { navController.navigate(Screen.EditUser.route) }) {
+                    TextButton(onClick = onEditUser) {
                         Text(stringResource(R.string.user_edit), fontSize = 16.sp)
                     }
                 }

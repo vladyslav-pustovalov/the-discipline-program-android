@@ -27,9 +27,8 @@ import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.EditUserVie
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.UserViewModel
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditUserScreen(
+fun EditUserRoute(
     navController: NavController,
     userViewModel: UserViewModel = hiltViewModel(),
     editUserViewModel: EditUserViewModel = hiltViewModel()
@@ -56,13 +55,62 @@ fun EditUserScreen(
         )
     }
 
+    EditUserScreenContent(
+        firstName = editUserViewModel.firstName,
+        lastName = editUserViewModel.lastName,
+        phoneNumber = editUserViewModel.phoneNumber,
+        dateOfBirth = editUserViewModel.dateOfBirth,
+        isLoading = editUserViewModel.isLoading,
+        onFirstNameChange = { editUserViewModel.firstName = it },
+        onLastNameChange = { editUserViewModel.lastName = it },
+        onPhoneNumberChange = { editUserViewModel.phoneNumber = it },
+        onDateOfBirthChange = { editUserViewModel.dateOfBirth = it },
+        onBackClick = { navController.popBackStack() },
+        onChangePasswordClick = { navController.navigate(Screen.ChangePassword.route) },
+        onSaveClick = {
+            val currentUser = (userState as? UiState.Success)?.data
+            currentUser?.let { user ->
+                editUserViewModel.saveUpdatedUser(user) { updatedUser ->
+                    userViewModel.updateUser(updatedUser)
+                    navController.popBackStack()
+                }
+            }
+        }
+    )
+}
+
+@Composable
+fun EditUserScreen(
+    navController: NavController,
+    userViewModel: UserViewModel = hiltViewModel(),
+    editUserViewModel: EditUserViewModel = hiltViewModel()
+) {
+    EditUserRoute(navController = navController, userViewModel = userViewModel, editUserViewModel = editUserViewModel)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EditUserScreenContent(
+    firstName: String,
+    lastName: String,
+    phoneNumber: String,
+    dateOfBirth: String,
+    isLoading: Boolean,
+    onFirstNameChange: (String) -> Unit,
+    onLastNameChange: (String) -> Unit,
+    onPhoneNumberChange: (String) -> Unit,
+    onDateOfBirthChange: (String) -> Unit,
+    onBackClick: () -> Unit,
+    onChangePasswordClick: () -> Unit,
+    onSaveClick: () -> Unit
+) {
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.edit_user_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.common_back_cd)
@@ -70,24 +118,14 @@ fun EditUserScreen(
                     }
                 },
                 actions = {
-                    if (editUserViewModel.isLoading) {
+                    if (isLoading) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .size(24.dp)
                                 .padding(end = 12.dp)
                         )
                     } else {
-                        TextButton(
-                            onClick = {
-                                val currentUser = (userState as? UiState.Success)?.data
-                                currentUser?.let { user ->
-                                    editUserViewModel.saveUpdatedUser(user) { updatedUser ->
-                                        userViewModel.updateUser(updatedUser)
-                                        navController.popBackStack()
-                                    }
-                                }
-                            }
-                        ) {
+                        TextButton(onClick = onSaveClick) {
                             Text(stringResource(R.string.common_save), fontSize = 16.sp, fontWeight = FontWeight.SemiBold)
                         }
                     }
@@ -107,8 +145,8 @@ fun EditUserScreen(
             Text(stringResource(R.string.edit_user_details_header), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
             OutlinedTextField(
-                value = editUserViewModel.firstName,
-                onValueChange = { editUserViewModel.firstName = it },
+                value = firstName,
+                onValueChange = onFirstNameChange,
                 label = { Text(stringResource(R.string.edit_user_first_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -119,8 +157,8 @@ fun EditUserScreen(
             )
 
             OutlinedTextField(
-                value = editUserViewModel.lastName,
-                onValueChange = { editUserViewModel.lastName = it },
+                value = lastName,
+                onValueChange = onLastNameChange,
                 label = { Text(stringResource(R.string.edit_user_last_name)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -131,8 +169,8 @@ fun EditUserScreen(
             )
 
             OutlinedTextField(
-                value = editUserViewModel.phoneNumber,
-                onValueChange = { editUserViewModel.phoneNumber = it },
+                value = phoneNumber,
+                onValueChange = onPhoneNumberChange,
                 label = { Text(stringResource(R.string.edit_user_phone_number)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -143,8 +181,8 @@ fun EditUserScreen(
             )
 
             OutlinedTextField(
-                value = editUserViewModel.dateOfBirth,
-                onValueChange = { editUserViewModel.dateOfBirth = it },
+                value = dateOfBirth,
+                onValueChange = onDateOfBirthChange,
                 label = { Text(stringResource(R.string.edit_user_date_of_birth)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(
@@ -152,15 +190,7 @@ fun EditUserScreen(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        val currentUser = (userState as? UiState.Success)?.data
-                        currentUser?.let { user ->
-                            editUserViewModel.saveUpdatedUser(user) { updatedUser ->
-                                userViewModel.updateUser(updatedUser)
-                                navController.popBackStack()
-                            }
-                        }
-                    }
+                    onDone = { onSaveClick() }
                 ),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -168,7 +198,7 @@ fun EditUserScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { navController.navigate(Screen.ChangePassword.route) },
+                onClick = onChangePasswordClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
