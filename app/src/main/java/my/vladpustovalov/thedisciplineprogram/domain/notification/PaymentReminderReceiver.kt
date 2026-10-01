@@ -1,14 +1,17 @@
 package my.vladpustovalov.thedisciplineprogram.domain.notification
 
+import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 
 class PaymentReminderReceiver : BroadcastReceiver() {
 
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     override fun onReceive(context: Context, intent: Intent) {
         showNotification(context)
         

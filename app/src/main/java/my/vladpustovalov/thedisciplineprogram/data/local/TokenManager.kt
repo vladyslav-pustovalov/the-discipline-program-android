@@ -3,6 +3,7 @@ package my.vladpustovalov.thedisciplineprogram.data.local
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import androidx.core.content.edit
 
 class TokenManager(context: Context) {
 
@@ -24,10 +25,10 @@ class TokenManager(context: Context) {
     }
 
     fun saveAuthData(token: String, userId: Int) {
-        sharedPreferences.edit()
-            .putString(KEY_JWT_TOKEN, token)
-            .putInt(KEY_USER_ID, userId)
-            .apply()
+        sharedPreferences.edit {
+            putString(KEY_JWT_TOKEN, token)
+            putInt(KEY_USER_ID, userId)
+        }
     }
 
     fun getToken(): String? {
@@ -39,9 +40,9 @@ class TokenManager(context: Context) {
     }
 
     fun clearToken() {
-        sharedPreferences.edit()
-            .remove(KEY_JWT_TOKEN)
-            .remove(KEY_USER_ID)
-            .apply()
+        sharedPreferences.edit {
+            remove(KEY_JWT_TOKEN)
+            remove(KEY_USER_ID)
+        }
     }
 }

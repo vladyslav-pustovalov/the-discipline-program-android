@@ -35,6 +35,7 @@ import androidx.navigation.NavController
 import my.vladpustovalov.thedisciplineprogram.R
 import my.vladpustovalov.thedisciplineprogram.presentation.viewmodel.AuthViewModel
 import my.vladpustovalov.thedisciplineprogram.ui.navigation.Screen
+import androidx.core.net.toUri
 
 @Composable
 fun LoginScreen(
@@ -273,10 +274,10 @@ private fun SocialIconButton(
 
 private fun openUrl(context: Context, appUrl: String, webUrl: String) {
     try {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(appUrl))
+        val intent = Intent(Intent.ACTION_VIEW, appUrl.toUri())
         context.startActivity(intent)
     } catch (_: Exception) {
-        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(webUrl))
+        val intent = Intent(Intent.ACTION_VIEW, webUrl.toUri())
         context.startActivity(intent)
     }
 }

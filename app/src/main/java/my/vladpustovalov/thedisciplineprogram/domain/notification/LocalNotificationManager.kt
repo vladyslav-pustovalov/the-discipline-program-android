@@ -1,14 +1,17 @@
 package my.vladpustovalov.thedisciplineprogram.domain.notification
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import androidx.annotation.RequiresPermission
 import java.util.Calendar
 
 class LocalNotificationManager(private val context: Context) {
 
+    @RequiresPermission(Manifest.permission.SCHEDULE_EXACT_ALARM)
     @SuppressLint("ScheduleExactAlarm")
     fun scheduleMonthlyPaymentReminder() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
