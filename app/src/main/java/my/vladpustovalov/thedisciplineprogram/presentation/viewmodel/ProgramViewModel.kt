@@ -24,6 +24,7 @@ class ProgramViewModel @Inject constructor(
     private val programRepository: ProgramRepository,
     private val authRepository: AuthRepository
 ) : ViewModel() {
+    @Suppress("HasPlatformType")
     var programDate by mutableStateOf(LocalDate.now())
         private set
     var isShownPicker by mutableStateOf(false)

@@ -85,7 +85,7 @@ fun UserScreenContent(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            when (val state = userState) {
+            when (userState) {
                 is UiState.Loading -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
@@ -93,11 +93,11 @@ fun UserScreenContent(
                 }
                 is UiState.Error -> {
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(stringResource(R.string.user_error_prefix, state.message))
+                        Text(stringResource(R.string.user_error_prefix, userState.message))
                     }
                 }
                 is UiState.Success -> {
-                    val user = state.data
+                    val user = userState.data
                     UserProfileDetails(user = user)
                 }
             }

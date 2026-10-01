@@ -25,10 +25,6 @@ class TokenManager(private val context: Context) {
         preferences[KEY_JWT_TOKEN]
     }
 
-    val userIdFlow: Flow<Int> = context.dataStore.data.map { preferences ->
-        preferences[KEY_USER_ID] ?: -1
-    }
-
     suspend fun saveAuthData(token: String, userId: Int) {
         context.dataStore.edit { preferences ->
             preferences[KEY_JWT_TOKEN] = token
@@ -38,14 +34,6 @@ class TokenManager(private val context: Context) {
 
     fun getTokenSync(): String? = runBlocking {
         context.dataStore.data.map { it[KEY_JWT_TOKEN] }.firstOrNull()
-    }
-
-    suspend fun getToken(): String? {
-        return context.dataStore.data.map { it[KEY_JWT_TOKEN] }.firstOrNull()
-    }
-
-    fun getUserIdSync(): Int = runBlocking {
-        context.dataStore.data.map { it[KEY_USER_ID] ?: -1 }.firstOrNull() ?: -1
     }
 
     suspend fun getUserId(): Int {
